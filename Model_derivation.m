@@ -64,7 +64,78 @@ ForceMatrix = simplify(ForceMatrix);
 
 save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'vars')
 
-%%
-MassMatrix
+%% Subsitute constants in system
+p.L1 = 0.10;  % Length link 1 [m]
+p.L2 = 0.07;  % Length link 2 [m]
+p.m_1 = 0.10;  % Mass link 1 [kg]
+p.m_2 = 0.05;  % Mass link 2 [kg]  
+p.C1 = 0.80;  % Length factor of center off mass divided by L1 [-]
+p.b2 = 0.10;  % rotational friction constant [-]
+p.g = 9.81;   % Gravity constant [m/s^2]
 
-ForceMatrix
+% DC-motor varaibles
+p.R_a = 0.5; % Ohm
+p.K_r = 2; 
+p.K_t = 2;
+p.L_a = 0.1; %H
+
+Mm = subs(MassMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
+Ff = subs(ForceMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
+
+MM = odeFunction(Mm, vars, U_in);
+FF = odeFunction(Ff, vars, U_in);
+
+%% Use model for simulation
+dt = 0.01; T_end = 10;
+time_vec = (0 : dt : T_end)';
+N = length(time_vec);
+U_in_ = 6*ones(N, 1);
+opts = odeset('Mass', MM);
+[~, x] = ode45(FF, time_vec, [0.2, 0.5, 0, 0, 0], opts, U_in_(1));
+
+pos = states2pos(x(:, 1), x(:, 2), p.L1, p.L2);
+
+%% Animate simulation
+clear movieVector
+figure(1)
+for i = 1:5:N
+    clf; hold on; grid on;
+    ylim([-0.25 0.25])
+    xlim([-0.25 0.25])
+    
+    plot([pos.x_1(i) 0], [pos.y_1(i) 0], 'LineWidth', 8, 'Color', [64/255 64/255 64/255]) % link 1
+    plot([pos.x_2(i) pos.x_1(i)], [pos.y_2(i) pos.y_1(i)], 'LineWidth', 3, 'Color', [64/255 64/255 64/255]) % link 2
+    
+    % point masses visualisation
+    plot(pos.x_1(i), pos.y_1(i), '.', 'Color', [64/255 64/255 64/255], 'MarkerSize', 40)
+    plot(pos.x_2(i), pos.y_2(i), '.', 'Color', [64/255 64/255 64/255], 'MarkerSize', 60)
+    
+    plot(0, 0, '.', 'Color', [64/255 64/255 64/255], 'MarkerSize', 80)
+    plot(0, 0, '.', 'Color', [255/255 255/255 255/255], 'MarkerSize', 70)
+    plot(0, 0, '.', 'Color', [64/255 64/255 64/255], 'MarkerSize', 30)
+    
+    title(strcat("Simulation Time: ", num2str(time_vec(i), 2), " s"))
+    xlabel('x (m)')
+    ylabel('y (m)')
+    
+    movieVector(round(i/5) + 1) = getframe(gcf);
+	drawnow
+end
+
+% export video
+if 0
+    myWriter = VideoWriter('C:\Users\Danny\Desktop\sim_hybrid.mp4', 'MPEG-4');
+    myWriter.FrameRate = 20;
+    open(myWriter);
+    writeVideo(myWriter, movieVector);
+    close(myWriter);
+end
+
+
+%% States 2 postion
+function pos = states2pos(theta_1, theta_2, L1, L2)
+    pos.x_1 = L1*sin(theta_1);
+    pos.y_1 = L1*cos(theta_1);
+    pos.x_2 = pos.x_1 + L2 * sin(theta_2 + theta_1);
+    pos.y_2 = pos.y_1 + L2 * cos(theta_2 + theta_1);
+end
