@@ -14,8 +14,8 @@ syms R_a K_r K_t L_a U_in
 
 %% ForceMatrix MassMatrix derivation
 % Kinematics
-x_1 = L1*sin(theta_1);
-y_1 = L1*cos(theta_1);
+x_1 = L1*sin(theta_1(t));
+y_1 = L1*cos(theta_1(t));
 x_2 = x_1 + L2 * sin(theta_2 + theta_1);
 y_2 = y_1 + L2 * cos(theta_2 + theta_1);
 
@@ -41,15 +41,15 @@ D = 1/2 * b2 * dtheta_2^2;  % Not used yet
 
 % Apply Euler-Lagrange
 L = simplify(K - P);
-dL_theta_1 = diff(L, theta_1);
-dL_dtheta_1 = diff(L, dtheta_1);
+dL_theta_1 = diff(L, theta_1(t));
+dL_dtheta_1 = diff(L, dtheta_1(t));
 
-dL_theta_2 = diff(L, theta_2);
-dL_dtheta_2 = diff(L, dtheta_2);
+dL_theta_2 = diff(L, theta_2(t));
+dL_dtheta_2 = diff(L, dtheta_2(t));
 
 % equations of motion 
-deq1 = diff(dL_dtheta_1, t) - dL_theta_1 + diff(D, dtheta_1);   % th1
-deq2 = diff(dL_dtheta_2, t) - dL_theta_2 + diff(D, dtheta_2);   % th2
+deq1 = diff(dL_dtheta_1(t), t) - dL_theta_1 + diff(D, dtheta_1(t));   % th1
+deq2 = diff(dL_dtheta_2(t), t) - dL_theta_2 + diff(D, dtheta_2(t));   % th2
 deq3 = R_a*I + L_a*diff(I(t), t) + K_r * dtheta_1;              % I, From: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
 
 % Reformat equations of motion
@@ -70,7 +70,7 @@ p.L2 = 0.07;  % Length link 2 [m]
 p.m_1 = 0.10;  % Mass link 1 [kg]
 p.m_2 = 0.05;  % Mass link 2 [kg]  
 p.C1 = 0.80;  % Length factor of center off mass divided by L1 [-]
-p.b2 = 0.10;  % rotational friction constant [-]
+p.b2 = 0.00001;  % rotational friction constant [-]
 p.g = 9.81;   % Gravity constant [m/s^2]
 
 % DC-motor varaibles
@@ -86,10 +86,10 @@ MM = odeFunction(Mm, vars, U_in);
 FF = odeFunction(Ff, vars, U_in);
 
 %% Use model for simulation
-dt = 0.01; T_end = 10;
+dt = 0.01; T_end = 40;
 time_vec = (0 : dt : T_end)';
 N = length(time_vec);
-U_in_ = 6*ones(N, 1);
+U_in_ =  40*ones(N, 1);
 opts = odeset('Mass', MM);
 [~, x] = ode45(FF, time_vec, [0.2, 0.5, 0, 0, 0], opts, U_in_(1));
 
@@ -98,10 +98,14 @@ pos = states2pos(x(:, 1), x(:, 2), p.L1, p.L2);
 %% Animate simulation
 clear movieVector
 figure(1)
-for i = 1:5:N
-    clf; hold on; grid on;
+for i = 1:1:N
+    clf; hold on;
     ylim([-0.25 0.25])
     xlim([-0.25 0.25])
+    daspect([1 1 1])
+    grid on;
+    set(gca,'xtick',[-0.25:0.05:0.25])
+    set(gca,'ytick',[-0.25:0.05:0.25])
     
     plot([pos.x_1(i) 0], [pos.y_1(i) 0], 'LineWidth', 8, 'Color', [64/255 64/255 64/255]) % link 1
     plot([pos.x_2(i) pos.x_1(i)], [pos.y_2(i) pos.y_1(i)], 'LineWidth', 3, 'Color', [64/255 64/255 64/255]) % link 2
