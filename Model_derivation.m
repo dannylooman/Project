@@ -14,10 +14,9 @@ syms R_a K_m L_a U_in
 
 %% ForceMatrix MassMatrix derivation
 % Kinematics
-x_1 = L1*sin(theta_1);
-y_1 = L1*cos(theta_1);
-x_2 = x_1 + L2 * sin(theta_2 + theta_1);
-y_2 = y_1 + L2 * cos(theta_2 + theta_1);
+pos = states2pos(theta_1, theta_2, L1, L2);
+x_1 = pos.x_1; y_1 = pos.y_1; x_2 = pos.x_2; y_2 = pos.y_2;
+clear pos
 
 % Time derivatives
 dx_1 = diff(x_1, t);
@@ -62,7 +61,7 @@ leqs = [deq1; deq2; deq3];
 MassMatrix  = simplify(MassMatrix);
 ForceMatrix = simplify(ForceMatrix);
 
-save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'vars')
+save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'eqs', 'vars')
 
 %% Subsitute constants in system
 p.L1 = 0.10;   % Length link 1 [m]
@@ -135,8 +134,9 @@ if 0
 end
 
 
-%% States 2 postion
+%% Function Definitions
 function pos = states2pos(theta_1, theta_2, L1, L2)
+    % Contains kinematics
     pos.x_1 = L1*sin(theta_1);
     pos.y_1 = L1*cos(theta_1);
     pos.x_2 = pos.x_1 + L2 * sin(theta_2 + theta_1);
