@@ -12,8 +12,8 @@ load("saved_data\07-Sep-2021 11_43_41.mat");
 Ts = input.time(2) - input.time(1);
 
 % Transform timeseries to arrays and shrink input array to same size as
-% output array
-y = [-unwrap(theta1.Data), unwrap(theta2.Data)];
+% output array, multiply with -1 makes it better?
+y = -[unwrap(theta1.Data), unwrap(theta2.Data)];
 u = input.Data(1:length(theta1.Data), :);
 
 z = iddata(y, u, Ts, 'Name', 'RotPendulum', 'Inputunit', 'V', 'OutputUnit', ['rad'; 'rad']);
