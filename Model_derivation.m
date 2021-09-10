@@ -63,6 +63,13 @@ ForceMatrix = simplify(ForceMatrix);
 
 save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'eqs', 'vars')
 
+%% Generate ode function used for identification
+% nonlinfun has the form x_dot = f(t, x)
+nonlinfun = inv(MassMatrix) * ForceMatrix;
+
+nonlinfun = subs(nonlinfun, [vars(1), vars(2), vars(3), vars(4), vars(5)], [sym('x_1'), sym('x_2'), sym('x_3'), sym('x_4'), sym('x_5')])
+
+
 %% Subsitute constants in system
 p.L1 = 0.10;   % Length link 1 [m]
 p.L2 = 0.07;   % Length link 2 [m]
