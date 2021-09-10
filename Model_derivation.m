@@ -14,10 +14,9 @@ syms R_a K_m L_a U_in
 
 %% ForceMatrix MassMatrix derivation
 % Kinematics
-x_1 = L1*sin(theta_1);
-y_1 = L1*cos(theta_1);
-x_2 = x_1 + L2 * sin(theta_2 + theta_1);
-y_2 = y_1 + L2 * cos(theta_2 + theta_1);
+pos = states2pos(theta_1, theta_2, L1, L2);
+x_1 = pos.x_1; y_1 = pos.y_1; x_2 = pos.x_2; y_2 = pos.y_2;
+clear pos
 
 % Time derivatives
 dx_1 = diff(x_1, t);
@@ -62,7 +61,14 @@ leqs = [deq1; deq2; deq3];
 MassMatrix  = simplify(MassMatrix);
 ForceMatrix = simplify(ForceMatrix);
 
-save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'vars')
+save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'eqs', 'vars')
+
+%% Generate ode function used for identification
+% nonlinfun has the form x_dot = f(t, x)
+nonlinfun = inv(MassMatrix) * ForceMatrix;
+
+nonlinfun = subs(nonlinfun, [vars(1), vars(2), vars(3), vars(4), vars(5)], [sym('x_1'), sym('x_2'), sym('x_3'), sym('x_4'), sym('x_5')])
+
 
 %% Subsitute constants in system
 p.L1 = 0.10;   % Length link 1 [m]
@@ -135,8 +141,9 @@ if 0
 end
 
 
-%% States 2 postion
+%% Function Definitions
 function pos = states2pos(theta_1, theta_2, L1, L2)
+    % Contains kinematics
     pos.x_1 = L1*sin(theta_1);
     pos.y_1 = L1*cos(theta_1);
     pos.x_2 = pos.x_1 + L2 * sin(theta_2 + theta_1);
