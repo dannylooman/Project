@@ -10,7 +10,7 @@ clear; clc;
 syms theta_1(t) theta_2(t) I(t) L1 L2 m_1 m_2 g C1 b2
 
 % Variables for DC-motor
-syms R_a K_r K_t L_a U_in
+syms R_a K_m L_a U_in
 
 %% ForceMatrix MassMatrix derivation
 % Kinematics
@@ -48,9 +48,9 @@ dL_theta_2  = diff(L,  theta_2(t));
 dL_dtheta_2 = diff(L, dtheta_2(t));
 
 % equations of motion 
-deq1 =  K_t*I == diff(dL_dtheta_1, t) - dL_theta_1 + diff(D, dtheta_1(t));   % th1
+deq1 =  K_m*I == diff(dL_dtheta_1, t) - dL_theta_1 + diff(D, dtheta_1(t));   % th1
 deq2 =   0    == diff(dL_dtheta_2, t) - dL_theta_2 + diff(D, dtheta_2(t));   % th2
-deq3 =   U_in == R_a*I + L_a*diff(I, t) + K_r*dtheta_1;              % I, From: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
+deq3 =   U_in == R_a*I + L_a*diff(I, t) + K_m*dtheta_1;              % I, From: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
 
 % Reformat equations of motion
 var = [theta_1; theta_2; I];
@@ -70,26 +70,25 @@ p.L2 = 0.07;   % Length link 2 [m]
 p.m_1 = 0.10;  % Mass link 1 [kg]
 p.m_2 = 0.05;  % Mass link 2 [kg]  
 p.C1 = 0.80;   % Length factor of center off mass divided by L1 [-]
-p.b2 = 0.00001;  % rotational friction constant [-]
+p.b2 = 0.0001;  % rotational friction constant [-]
 p.g = 9.81;    % Gravity constant [m/s^2]
 
 % DC-motor varaibles
 p.R_a = 0.5; % Ohm
-p.K_r = 2; 
-p.K_t = 2;
+p.K_m = 0.5; 
 p.L_a = 0.1; %H
 
-Mm = subs(MassMatrix,  [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
-Ff = subs(ForceMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
+Mm = subs(MassMatrix,  [L1 L2 m_1 m_2 C1 b2 g R_a K_m L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_m p.L_a]);
+Ff = subs(ForceMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_m L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_m p.L_a]);
 
 MM = odeFunction(Mm, vars, U_in);
 FF = odeFunction(Ff, vars, U_in);
 
 %% Use model for simulation
-dt = 0.01; T_end = 40;
+dt = 0.01; T_end = 20;
 time_vec = (0 : dt : T_end)';
 N = length(time_vec);
-U_in_ =  40*ones(N, 1);
+U_in_ =  0*ones(N, 1);
 opts = odeset('Mass', MM);
 [~, x] = ode45(FF, time_vec, [0.2, 0.5, 0, 0, 0], opts, U_in_(1));
 
@@ -98,7 +97,7 @@ pos = states2pos(x(:, 1), x(:, 2), p.L1, p.L2);
 %% Animate simulation
 clear movieVector
 figure(1)
-for i = 1:1:N
+for i = 1:5:N
     clf; hold on;
     ylim([-0.25 0.25])
     xlim([-0.25 0.25])
