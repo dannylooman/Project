@@ -14,8 +14,8 @@ syms R_a K_r K_t L_a U_in
 
 %% ForceMatrix MassMatrix derivation
 % Kinematics
-x_1 = L1*sin(theta_1(t));
-y_1 = L1*cos(theta_1(t));
+x_1 = L1*sin(theta_1);
+y_1 = L1*cos(theta_1);
 x_2 = x_1 + L2 * sin(theta_2 + theta_1);
 y_2 = y_1 + L2 * cos(theta_2 + theta_1);
 
@@ -29,49 +29,49 @@ dtheta_2 = diff(theta_2, t);
 
 % ENERGY DEFINITIONS
 % Potential energy
-P = m_1 * g * C1 * y_1 + m_2 * g * y_2;
+P = m_1*g*C1*y_1 + m_2*g*y_2;
 
 % Kinetic energy
-K_trans =  0.5*m_1*(C1 * dx_1^2 + C1 * dy_1^2) + 0.5*m_2*(dx_2^2 + dy_2^2);
+K_trans =  1/2*m_1*C1^2*(dx_1^2 + dy_1^2) + 1/2*m_2*(dx_2^2 + dy_2^2);
 K_rot = 0;
 K = K_trans + K_rot;
 
 % Disapative energy
-D = 1/2 * b2 * dtheta_2^2;  % Not used yet
+D = 1/2*b2*dtheta_2^2;  % Not used yet
 
 % Apply Euler-Lagrange
 L = simplify(K - P);
-dL_theta_1 = diff(L, theta_1(t));
+dL_theta_1  = diff(L,  theta_1(t));
 dL_dtheta_1 = diff(L, dtheta_1(t));
 
-dL_theta_2 = diff(L, theta_2(t));
+dL_theta_2  = diff(L,  theta_2(t));
 dL_dtheta_2 = diff(L, dtheta_2(t));
 
 % equations of motion 
-deq1 = diff(dL_dtheta_1(t), t) - dL_theta_1 + diff(D, dtheta_1(t));   % th1
-deq2 = diff(dL_dtheta_2(t), t) - dL_theta_2 + diff(D, dtheta_2(t));   % th2
-deq3 = R_a*I + L_a*diff(I(t), t) + K_r * dtheta_1;              % I, From: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
+deq1 =  K_t*I == diff(dL_dtheta_1, t) - dL_theta_1 + diff(D, dtheta_1(t));   % th1
+deq2 =   0    == diff(dL_dtheta_2, t) - dL_theta_2 + diff(D, dtheta_2(t));   % th2
+deq3 =   U_in == R_a*I + L_a*diff(I, t) + K_r*dtheta_1;              % I, From: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
 
 % Reformat equations of motion
 var = [theta_1; theta_2; I];
-leqs = [deq1 == K_t * I; deq2 == 0; deq3 == U_in];
+leqs = [deq1; deq2; deq3];
 
 [eqs, vars] = reduceDifferentialOrder(leqs, var);
 [MassMatrix, ForceMatrix] = massMatrixForm(eqs, vars);
 
-MassMatrix = simplify(MassMatrix);
+MassMatrix  = simplify(MassMatrix);
 ForceMatrix = simplify(ForceMatrix);
 
 save('saved_data\Equations_and_vars.mat', 'MassMatrix', 'ForceMatrix', 'vars')
 
 %% Subsitute constants in system
-p.L1 = 0.10;  % Length link 1 [m]
-p.L2 = 0.07;  % Length link 2 [m]
+p.L1 = 0.10;   % Length link 1 [m]
+p.L2 = 0.07;   % Length link 2 [m]
 p.m_1 = 0.10;  % Mass link 1 [kg]
 p.m_2 = 0.05;  % Mass link 2 [kg]  
-p.C1 = 0.80;  % Length factor of center off mass divided by L1 [-]
+p.C1 = 0.80;   % Length factor of center off mass divided by L1 [-]
 p.b2 = 0.00001;  % rotational friction constant [-]
-p.g = 9.81;   % Gravity constant [m/s^2]
+p.g = 9.81;    % Gravity constant [m/s^2]
 
 % DC-motor varaibles
 p.R_a = 0.5; % Ohm
@@ -79,7 +79,7 @@ p.K_r = 2;
 p.K_t = 2;
 p.L_a = 0.1; %H
 
-Mm = subs(MassMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
+Mm = subs(MassMatrix,  [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
 Ff = subs(ForceMatrix, [L1 L2 m_1 m_2 C1 b2 g R_a K_r K_t L_a], [p.L1 p.L2 p.m_1 p.m_2 p.C1 p.b2 p.g p.R_a p.K_r p.K_t p.L_a]);
 
 MM = odeFunction(Mm, vars, U_in);
