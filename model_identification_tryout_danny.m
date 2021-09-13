@@ -8,12 +8,12 @@ opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 50;
 
 %% Create Identification data
-load("saved_data\07-Sep-2021 11_43_41.mat");
+load("saved_data\07-Sep-2021 11_44_42.mat");
 Ts = input.time(2) - input.time(1);
 
 % Transform timeseries to arrays and shrink input array to same size as
 % output array, multiply with -1 makes it better?
-y = -[unwrap(theta1.Data), unwrap(theta2.Data)];
+y = [unwrap(theta1.Data), unwrap(theta2.Data)];
 u = input.Data(1:length(theta1.Data), :);
 
 z = iddata(y, u, Ts, 'Name', 'RotPendulum', 'Inputunit', 'V', 'OutputUnit', ['rad'; 'rad']);
@@ -24,13 +24,13 @@ Order = [2 1 5];  % 2 outputs, 1 input, 5 states
 
 Parameters = [struct('Name', 'L1',  'Value', 0.1000, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
               struct('Name', 'L2',  'Value', 0.1000, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
-              struct('Name', 'm_1', 'Value', 0.1000, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 0.20, 'Fixed', false);
+              struct('Name', 'm_1', 'Value', 0.1000, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 0.20, 'Fixed', true);
               struct('Name', 'm_2', 'Value', 0.1000, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 1.00, 'Fixed', false);
               struct('Name', 'C1',  'Value', 0.5000, 'Unit', '-',     'Minimum', 0.30, 'Maximum', 1.00, 'Fixed', true);
               struct('Name', 'b2',  'Value', 0.0001, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 0.10, 'Fixed', true);
               struct('Name', 'g',   'Value', 9.8100, 'Unit', 'm/s^2', 'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);
-              struct('Name', 'R_a', 'Value', 0.1000, 'Unit', 'Ohm',   'Minimum', 0.00, 'Maximum', 5.00, 'Fixed', false);
-              struct('Name', 'K_m', 'Value', 0.1000, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 5.00, 'Fixed', true);
+              struct('Name', 'R_a', 'Value', 0.3000, 'Unit', 'Ohm',   'Minimum', 0.00, 'Maximum', 5.00, 'Fixed', false);
+              struct('Name', 'K_m', 'Value', -2.0000, 'Unit', '-',     'Minimum', -5.00, 'Maximum', 5.00, 'Fixed', true);
               struct('Name', 'L_a', 'Value', 0.1000, 'Unit', 'H',     'Minimum', 0.00, 'Maximum', 5.00, 'Fixed', false);
               ];
 
