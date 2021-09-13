@@ -1,4 +1,0 @@
-% Sensor saving script
-
-filename = strcat("saved_data/", datestr(datetime), ".mat");
-save filename theta1 theta2 input

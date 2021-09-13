@@ -1,7 +1,0 @@
-raw_theta2_data = raw_theta2.Data(4000:end);
-
-min_th2 = min(raw_theta2_data)
-max_th2 = max(raw_theta2_data)
-mean_th2 = mean(raw_theta2_data)
-
-gain_theta2 = -pi / mean(raw_theta2_data) 
