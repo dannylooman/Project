@@ -4,7 +4,7 @@
 % systems
 
 %% INITIALIZE Workspace
-clear; clc;
+clear all; clc;
 
 % Variables for pendulum
 syms theta_1(t) theta_2(t) I(t) L1 L2 m_1 m_2 g C1 b2
