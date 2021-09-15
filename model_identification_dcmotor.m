@@ -27,21 +27,21 @@ subspace_id_sys = n4sid(z,3,'Ts',0,'Form', 'canonical');
 file_name = 'dc_motor_model';
 Order = [1 1 3];  % 1 outputs, 1 input, 3 states
 
-J = 0.5;
-b = 0.002;
-K = -1;
-L = 0.1;
-R = 0.01;
+J = 0.005;
+b = 0;
+K = -0.1368;
+L = 0.0025;
+R = 0.08;
 
 Parameters = {'inertia',J; 'friction',b; 'motor_constant',K; 'L',L; 'R', R};
 
 
 init_sys = idgrey(file_name, Parameters, 'c', 'Name', 'Rotational Pendulum');
-init_sys.Structure.Parameters(1).Free = true;
-init_sys.Structure.Parameters(2).Free = true;
-init_sys.Structure.Parameters(3).Free = true;
-init_sys.Structure.Parameters(4).Free = true;
-init_sys.Structure.Parameters(5).Free = true;
+init_sys.Structure.Parameters(1).Free = false;
+init_sys.Structure.Parameters(2).Free = false;
+init_sys.Structure.Parameters(3).Free = false;
+init_sys.Structure.Parameters(4).Free = false;
+init_sys.Structure.Parameters(5).Free = false;
 
 %% Run identification
 identified_system = greyest(z, init_sys, opt);
