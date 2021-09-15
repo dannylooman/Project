@@ -19,6 +19,9 @@ u = input.Data(1:length(theta1.Data), :);
 
 z = iddata(y, u, Ts, 'Name', 'RotPendulum', 'Inputunit', 'V', 'OutputUnit', 'rad');
 
+%% Subspace Identification
+subspace_id_sys = n4sid(z,3,'Ts',0,'Form', 'canonical');
+
 %% Create grey box model
 % J, b, K, L, R
 file_name = 'dc_motor_model';
@@ -46,3 +49,6 @@ disp(identified_system.Report.Parameters.ParVector)
 
 %% Compare results
 compare(z, identified_system);
+
+disp(identified_system.A);
+disp(subspace_id_sys.A);
