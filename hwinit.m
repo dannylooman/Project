@@ -14,4 +14,4 @@ adinoffs = [adinoffs 0 0 0 0 0];    % input offset
 adingain = [adingain 1 1 1 1 1];     % input gain (to radians)
 
 % Other initialisation
-h = 0.01;
+h = 0.001;
