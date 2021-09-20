@@ -28,4 +28,5 @@ theta_ret.dot = diff(filter(filter_gain, [1, filter_gain - 1], theta_ret.angle))
 % Resize time and angle datasets:
 theta_ret.time = theta_ret.time(2:end);
 theta_ret.angle = theta_ret.angle(2:end);
+theta_ret = timeseries([theta_ret.angle,theta_ret.dot],theta_ret.time);
 end
