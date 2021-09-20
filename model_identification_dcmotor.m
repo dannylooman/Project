@@ -25,11 +25,11 @@ subspace_id_sys = n4sid(z,3,'Ts',0,'Form', 'canonical');
 %% Create grey box model
 file_name = 'dc_motor_model';
 
-J = 0.005;
-b = 0;
-K = -0.1368;
-L = 0.0025;
-R = 0.08;
+J = 0.0084;
+b = 0.0076;
+K = -0.1411;
+L = 0.0003;
+R = 0.0814;
 
 Parameters = {'inertia',J; 'friction',b; 'motor_constant',K; 'L',L; 'R', R};
 
@@ -47,5 +47,6 @@ disp(identified_system.Report.Parameters.ParVector)
 %% Compare results
 compare(z, identified_system);
 
-disp(identified_system.A);
-disp(subspace_id_sys.A);
+%% Save model
+dc_motor_ss = ss(identified_system);
+save('saved_data\dcmotor_sys.mat', 'dc_motor_ss');
