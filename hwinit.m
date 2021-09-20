@@ -15,3 +15,15 @@ adingain = [adingain 1 1 1 1 1];     % input gain (to radians)
 
 % Other initialisation
 h = 0.001;
+
+%Model parameters
+%m_1, m_2, C1, b2, g, R_a, K_m ,L_a
+model.L1=1.0;
+model.L2=0.0884;
+model.m1=0.1;
+model.m2=0.1124;
+model.b2=0.0125;
+model.g=9.81;
+model.Ra=0.2000;
+model.Km=-0.5;
+model.La=0.02;
