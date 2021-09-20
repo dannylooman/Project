@@ -5,14 +5,28 @@ function theta_ret = conv_theta(theta_in)
 % Unwrapping
 theta_out = theta_in.Data;
 theta_diff = diff(theta_out);
+c1 = 1; c2 = 1;
+
 for i = 1:length(theta_diff)-1
-    if theta_diff(i) > 6
-        if (theta_in.Data(i) < -3 & theta_in.Data(i+1) > 3)
-            theta_out(i+1:end) = theta_out(i+1:end) - 2*pi;
+    if theta_diff(i) > 1 || c1 > 1                          % when detecting a jump bigger than 1
+        if (theta_in.Data(i-c1) - theta_in.Data(i) < -5.6)  % check if we jumped at least 5.6 in value
+            theta_out(i+1:end) = theta_out(i+1:end) - 2*pi; % if yes correct with 2 pi
+            c1 = 1;                                         % reset counter
+        else
+            c1 = c1+1;                                      % if jump is smaller than 5.6 increment counter
+            if c1 > 5                                       % if in 5 samples we have not made a sufficiently big jump, reset counter
+                c1 = 1;
+            end
         end
-    elseif theta_diff(i) < -6
-        if (theta_in.Data(i) > 3 & theta_in.Data(i+1) < -3)
+    elseif theta_diff(i) < -1 || c2 > 1
+        if (theta_in.Data(i-c2) - theta_in.Data(i) > 5.6)
             theta_out(i+1:end) = theta_out(i+1:end) + 2*pi;
+            c2 = 1;
+        else
+            c2 = c2+1;
+            if c2 > 5
+                c2 = 1;
+            end
         end
     end
 end
