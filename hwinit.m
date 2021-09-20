@@ -2,6 +2,10 @@
 % DSCS FPGA interface board: init and I/O conversions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Import paths
+addpath('scripts')
+addpath('models')
+
 % gains and offsets
 daoutoffs = [0.00];                   % output offset
 daoutgain = 1*[-6];                   % output gain
