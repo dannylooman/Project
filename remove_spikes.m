@@ -18,9 +18,18 @@ end
 
 % if the end of the peak is in the dataset, length(index) must be even
 for i = 1:1:length(index)
-    x = [index(i)-smoothing_length, index(i)+smoothing_length];
-    v = [y(index(i)-smoothing_length), y(index(i)+smoothing_length)];
-    xq = index(i)-smoothing_length : index(i)+smoothing_length;
+    window_max = index(i) + smoothing_length;
+    window_min = index(i) - smoothing_length;
+    
+    if index(i) + smoothing_length > N
+        window_max = N;
+    elseif index(i) - smoothing_length < 1
+        window_min = 1;
+    end
+    
+    x = [window_min, window_max];
+    v = [y(window_min), y(window_max)];
+    xq = window_min : window_max;
     y_spikefree(xq) = interp1(x, v, xq);
 end
 
