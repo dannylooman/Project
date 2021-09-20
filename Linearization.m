@@ -47,18 +47,20 @@ sys_d = c2d(sys,h); % discrete time sys
 
 Q = zeros(5);
 Q(1:2,1:2)=ones(2)*1; % Our cost is (x1+x2)^2*1
+Q(1,1)=1.2;           % Add little extra cost for x1^2 -> to go back to origin faster!
 R = 1;                % Input cost is i^2*1
 [K,~,~]=lqr(sys_d,Q,R,[]); % calc. K vector
 
 sys_cl = ss(Ad-Bd*K,Bd,Cd,Dd,Ts); % create state feedbacked sys
-%% Simulate system for initial perturbation
+% Simulate system for initial perturbation
 
 t=0:1/1000:2;   % 2 sec horizon
 u=0*t;          % no input (system already has feedback!)
-x0 = [-0.1,0.2,0,0,0];  % slight initial deviation
+x0 = [-0.2,0.1,0,0,0];  % slight initial deviation
 y = lsim(sys_cl,u,t,x0);
 plot(t,y(:,1)+y(:,2))   % Plot x1+x2 -> we can see system stabilizese!
-
+hold
+plot(t,y(:,1))
 %% Functions
 
 %Substitute x,and U_in around 0
