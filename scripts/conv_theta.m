@@ -37,7 +37,8 @@ theta_ret.angle = remove_spikes(theta_out,50);
 % Differentiating
 dt = theta_in.time(2) - theta_in.time(1);
 filter_gain = dt / 0.03;
-theta_ret.dot = filter(filter_gain, [1, filter_gain - 1], diff(filter(filter_gain, [1, filter_gain - 1], theta_ret.angle))/dt);
+% theta_ret.dot = filter(filter_gain, [1, filter_gain - 1], diff(filter(filter_gain, [1, filter_gain - 1], theta_ret.angle))/dt);
+theta_ret.dot = diff( filter(filter_gain, [1, filter_gain - 1], theta_ret.angle) )/dt;
 
 % Resize time and angle datasets:
 theta_ret.time = theta_ret.time(2:end);

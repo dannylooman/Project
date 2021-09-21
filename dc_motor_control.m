@@ -16,6 +16,21 @@ R_lqr = 1;
 K = dlqr(dc_motor_ss.A, dc_motor_ss.B, Q_lqr, R_lqr);
 
 
+% Closed loop system
+discrete_cl_dcmotor = ss(dc_motor_ss.A - dc_motor_ss.B*K, ...
+                         dc_motor_ss.B, dc_motor_ss.C, dc_motor_ss.D, Ts);   
+K_ff = 1/dcgain(discrete_cl_dcmotor); 
 
+
+%% Validate control gain
+
+opt = stepDataOptions('StepAmplitude', [1/dcgain(discrete_cl_dcmotor), 0]);
+[y_ct, t_ct, x_ct] = step(discrete_cl_dcmotor, 20);
+ct_data = timeseries(y_ct, t_ct);
+
+figure(); hold on;
+plot(t_ct, y_ct(:,1));
+plot(t_ct, y_ct(:,2));
+legend("y1", "y2");
 
 
