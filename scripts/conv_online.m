@@ -1,16 +1,16 @@
 function y = conv_online(u)
-persistent c1 c2 corr
+persistent c1 c2 corr prev
         
 if isempty(c1)
     c1 = 1;
     c2 = 1;
     corr = 0;
+    prev = zeros(5,1);
     return
 end
 
-
-if u(end)-u(end-1) > 1 || c1 > 1                        % when detecting a jump bigger than 1
-    if (u(end-c1) - u(end) < -5.6)                      % check if we jumped at least 5.6 in value
+if u-prev(1) > 1 || c1 > 1                        % when detecting a jump bigger than 1
+    if (prev(c1) - u < -5.6)                      % check if we jumped at least 5.6 in value
         corr = corr - 2*pi;                             % if yes correct with 2 pi
         c1 = 1;                                         % reset counter
     else
@@ -19,8 +19,8 @@ if u(end)-u(end-1) > 1 || c1 > 1                        % when detecting a jump 
             c1 = 1;
         end
     end
-elseif u(end)-u(end-1) < -1 || c2 > 1
-    if (u(end-c2) - u(end) > 5.6)
+elseif u-prev(1) < -1 || c2 > 1
+    if (prev(c2) - u > 5.6)
         corr = corr + 2*pi;
         c2 = 1;
     else
@@ -30,5 +30,6 @@ elseif u(end)-u(end-1) < -1 || c2 > 1
         end
     end
 end
-
+prev(2:4)=prev(1:3);
+prev(1)=u;
 y=u+corr;
