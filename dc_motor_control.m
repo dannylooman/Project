@@ -7,12 +7,14 @@ theta1 = conv_theta(theta1);
 Ts = input.time(2) - input.time(1);
 %%
 % Kalman filter
-Q_kf = diag([0.01, 0.1, 1])/1000000;
-R_kf = eye(2)*100;
+Q_kf = diag([0.01, 0.01, 1])/1000;
+R_kf = diag([1, 100]);
+% Q_kf = diag([0.01, 0.1, 1])/1000000;
+% R_kf = eye(2)*100;
 %%
 % state_feedbackgain
-Q_lqr = 1*diag([1, 0.1, 0.01]);
-R_lqr = 1;
+Q_lqr = 1*diag([2, 0.1, 0.0001]);
+R_lqr = 0.1;
 K = dlqr(dc_motor_ss.A, dc_motor_ss.B, Q_lqr, R_lqr);
 
 
