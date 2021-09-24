@@ -22,7 +22,7 @@ theta1_filt = filter([1-filter_gain filter_gain-1],[1 filter_gain-1], theta1.dat
 y = [theta1_filt, theta1.data(:, 2)];
 u = input.data(1:length(theta1.data), :);
 
-z = iddata(y, u, Ts, 'Name', 'RotPendulum');
+z = iddata(y, u, Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
 
 %% Subspace Identification
 subspace_id_sys = n4sid(z,3,'Ts',0,'Form', 'canonical');
