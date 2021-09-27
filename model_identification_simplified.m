@@ -9,11 +9,11 @@ opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 50;
 
 %% Create Identification data
-load("saved_data\07-Sep-2021 11_44_42.mat");
+load("saved_data\27-Sep-2021 14_14_20-4meas-hangin-down.mat");
 %%
 Ts = input.time(2) - input.time(1);
-theta1 = conv_theta(theta1); %Preprocess theta1
-theta2 = conv_theta(theta2); %Preprocess theta1
+theta1 = merge_theta(theta1.data(:,1),theta1.data(:,2)); %Preprocess theta1
+theta2 = merge_theta(theta1.data(:,1),theta1.data(:,2)); %Preprocess theta1
 
 % Transform timeseries to arrays and shrink input array to same size as
 % output array
@@ -21,11 +21,11 @@ y = [theta1.Data(:,1), theta2.Data(:,1), theta1.Data(:,2), theta2.Data(:,2)];
 u = input.Data(1:length(theta1.Data), :);
 %u = diff(u)/Ts;
 %y = y(1:length(u),:);
-nn=215;
-y=y(nn:end,:);
-u=u(nn:end,:);
-plot(y(:,2))
-
+%nn=215;
+%y=y(nn:end,:);
+%u=u(nn:end,:);
+%plot(y(:,2))
+%%
 z = iddata(y, u, Ts, 'Name', 'RotPendulum');
 
 %% Create grey box model
@@ -33,18 +33,18 @@ file_name = 'model_function_simplified_motor';
 Order = [4 1 4];  % 4 outputs, 1 input, 4 states
 
 Parameters = [struct('Name', 'L1', 'Value', model.L1, 'Unit', 'm',      'Minimum', 0.05,  'Maximum', 0.15, 'Fixed', true);
-              struct('Name', 'L2', 'Value', model.L2, 'Unit', 'm',      'Minimum', 0.05,  'Maximum', 0.15, 'Fixed', true);
-              struct('Name', 'm_2','Value', model.m2, 'Unit', 'kg',     'Minimum', 0.00,  'Maximum', 10.0, 'Fixed', true);
-              struct('Name', 'b2', 'Value', model.b2, 'Unit', '-',      'Minimum', 0.00,  'Maximum', 0.10, 'Fixed', true);
+              struct('Name', 'L2', 'Value', model.L2, 'Unit', 'm',      'Minimum', 0.05,  'Maximum', 0.15, 'Fixed', false);
+              struct('Name', 'm_2','Value', model.m2, 'Unit', 'kg',     'Minimum', 0.00,  'Maximum', 10.0, 'Fixed', false);
+              struct('Name', 'b2', 'Value', model.b2, 'Unit', '-',      'Minimum', 0.00,  'Maximum', 0.10, 'Fixed', false);
               struct('Name', 'g',  'Value', model.g,  'Unit', 'm/s^2',  'Minimum', 0.00,  'Maximum', 10.0, 'Fixed', true);
-              struct('Name', 'c',  'Value', model.c,  'Unit','rad/s^2V','Minimum', -10.00, 'Maximum', 10.00, 'Fixed', true);
+              struct('Name', 'c',  'Value', model.c,  'Unit','rad/s^2V','Minimum', -10.00, 'Maximum', 10.00, 'Fixed', false);
               struct('Name', 'dt',  'Value', Ts,  'Unit','rad/s^2V','Minimum', -5.00, 'Maximum', 5.00, 'Fixed', true);
               ];
 
-InitialStates = [struct('Name', 'x1', 'Value', theta1.data(1,1), 'Unit', 'rad',   'Minimum', -2*pi, 'Maximum', 2*pi, 'Fixed', true);
-                 struct('Name', 'x2', 'Value', theta2.data(1,1), 'Unit', 'rad',   'Minimum', -2*pi, 'Maximum', 2*pi, 'Fixed', true);
-                 struct('Name', 'x3', 'Value', 0.0, 'Unit', 'rad/s', 'Minimum', -0.5, 'Maximum', 0.5, 'Fixed', true);
-                 struct('Name', 'x4', 'Value', 0.0, 'Unit', 'rad/s', 'Minimum', -0.5, 'Maximum', 0.5, 'Fixed', true);
+InitialStates = [struct('Name', 'x1', 'Value', theta1.data(1,1), 'Unit', 'rad',   'Minimum', -2*pi, 'Maximum', 2*pi, 'Fixed', false);
+                 struct('Name', 'x2', 'Value', theta2.data(1,1), 'Unit', 'rad',   'Minimum', -2*pi, 'Maximum', 2*pi, 'Fixed', false);
+                 struct('Name', 'x3', 'Value', 0.0, 'Unit', 'rad/s', 'Minimum', -0.5, 'Maximum', 0.5, 'Fixed', false);
+                 struct('Name', 'x4', 'Value', 0.0, 'Unit', 'rad/s', 'Minimum', -0.5, 'Maximum', 0.5, 'Fixed', false);
                 ];
             
 Sample_time = 0; % Continuous model
@@ -56,6 +56,8 @@ disp(identified_system.Report.Parameters.ParVector)
 
 %% Compare results
 compare(z, identified_system);
+
+STOPPP
 %% Check for Swing!
 load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
 Ts = input.time(2) - input.time(1);
@@ -134,7 +136,7 @@ plot(t,y(:,2))
 legend('simulated, '+string(RMSE_spd)+'%','original')
 hold
 %% Check for corssterms
-load("saved_data\27-Sep-2021 13_20_21-4meas-hangin-down.mat");
+load("saved_data\27-Sep-2021 14_14_20-4meas-hangin-down.mat");
 
 Ts = input.time(2) - input.time(1);
 theta1 = conv_theta(theta1);
