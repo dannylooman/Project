@@ -1,10 +1,11 @@
 %%Script used for greybox identification of rotational pendulum
 % Danny Looman
 clear; clc;
+hwinit;
 
 %% Create Identification data
 load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
-%%
+
 Ts = input.time(2) - input.time(1);
 theta2 = conv_theta(theta2);
 %%
@@ -44,7 +45,7 @@ disp(identified_system.Report.Parameters.ParVector)
 compare(z, identified_system);
 
 %% Nonlinear grey box identification
-file_name = 'model_function_file_second_link_swing';
+file_name = 'model_function_file_second_link_nonlin';
 Order = [2 1 2];  % 1 outputs, 0 input, 2 states
 
 Parameters = [struct('Name', 'L2',  'Value', model.L2, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
