@@ -1,4 +1,4 @@
-function [dx, y] = model_function_file_second_link_swing(t, x, u, L2, m2, b2, g, c2, varargin)
+function [dx, y] = model_function_file_second_link_nonlin(t, x, u, L2, m2, b2, g, c2, varargin)
 % Subsitutions made from nonlinfun value
 %
 % Parameters: %L2, m2, b2, g, c2
