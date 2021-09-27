@@ -133,6 +133,67 @@ plot(tq,sts(:,3))
 plot(t,y(:,2))
 legend('simulated, '+string(RMSE_spd)+'%','original')
 hold
+%% Check for corssterms
+load("saved_data\27-Sep-2021 13_20_21-4meas-hangin-down.mat");
+
+Ts = input.time(2) - input.time(1);
+theta1 = conv_theta(theta1);
+theta2 = merge_theta(theta2,dtheta2);
+filter_gain = Ts / 250.0;% High pass filter theta1 to remove gravity dynamics
+theta1_filt = filter([1-filter_gain filter_gain-1],[1 filter_gain-1], theta1.data(:, 1));
+y = [theta1_filt, theta2.data(:, 1), theta1.data(:,2), theta2.data(:, 2)];
+u = input.data(1:length(theta1.data), :);
+
+fc=20;
+x0 = [y(1,1); 0; y(1,2); 0];
+[tq, sts] = simulate_motor(u,x0,model,Ts,fc);
+
+%NRMSE metrics
+sts_dec_pos1 = decimatee(sts(:,1),fc);
+sts_dec_pos2 = decimatee(sts(:,2),fc);
+sts_dec_spd1 = decimatee(sts(:,3),fc);
+sts_dec_spd2 = decimatee(sts(:,4),fc);
+RMSE_pos1 = comp(y(:,1),sts_dec_pos1);
+RMSE_pos2 = comp(y(:,2),sts_dec_pos2);
+RMSE_spd1 = comp(y(:,3),sts_dec_spd1);
+RMSE_spd2 = comp(y(:,4),sts_dec_spd2);
+
+%pos1
+t=1:fc:length(y)*fc;
+figure()
+hold on
+plot(tq,sts(:,1))
+plot(t,y(:,1))
+legend('simulated, '+string(RMSE_pos1)+'%','original')
+title('Theta_1')
+hold off
+
+%pos2
+figure()
+hold on
+plot(tq,sts(:,2))
+plot(t,y(:,2))
+legend('simulated, '+string(RMSE_pos2)+'%','original')
+title('Theta_2')
+hold off
+
+%speed1
+figure()
+hold
+plot(tq,sts(:,3))
+plot(t,y(:,3))
+legend('simulated, '+string(RMSE_spd1)+'%','original')
+title('D theta_1')
+hold
+
+%speed2
+figure()
+hold
+plot(tq,sts(:,4))
+plot(t,y(:,4))
+legend('simulated, '+string(RMSE_spd2)+'%','original')
+title('D theta_2')
+hold
 
 %% Swing only
 fc=30;
