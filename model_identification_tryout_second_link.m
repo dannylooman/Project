@@ -26,11 +26,11 @@ z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'Out
 file_name = 'model_function_file_second_link_swing';
 Order = [2 1 2];  % 1 outputs, 0 input, 2 states
 
-Parameters = [struct('Name', 'L2',  'Value', 0.0882, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
-              struct('Name', 'm_2', 'Value', 0.0107, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 1.00, 'Fixed', false);
-              struct('Name', 'b2',  'Value', 0.0017, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 0.10, 'Fixed', false);
-              struct('Name', 'g',   'Value', 9.8100, 'Unit', 'm/s^2', 'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);
-              struct('Name', 'c2',  'Value', 0.0, 'Unit', 'Nm',    'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', false);];
+Parameters = [struct('Name', 'L2',  'Value', model.L2, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
+              struct('Name', 'm_2', 'Value', model.m2, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 1.00, 'Fixed', true);
+              struct('Name', 'b2',  'Value', model.b2, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 0.10, 'Fixed', true);
+              struct('Name', 'g',   'Value', model.g,  'Unit', 'm/s^2', 'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);
+              struct('Name', 'c2',  'Value', 0.0,      'Unit', 'Nm',    'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);];
 
 %0.0884, 0.13, 0.011, 9.81, 0.25          
           
