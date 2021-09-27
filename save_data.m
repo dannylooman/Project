@@ -1,6 +1,6 @@
 % Sensor saving script
 
-filename = replace(strcat("saved_data\", datestr(datetime), "-4meas-hangin-down.mat"),':','_');
+filename = replace(strcat("saved_data\", datestr(datetime), "-first_link_only.mat"),':','_');
 save(filename, 'theta1', 'theta2','dtheta1', 'dtheta2', 'input')
 
 %% For loading into Simulink
