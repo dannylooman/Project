@@ -57,7 +57,7 @@ disp(identified_system.Report.Parameters.ParVector)
 %% Compare results
 compare(z, identified_system);
 
-STOP
+STOPPP
 %% Check for Swing!
 load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
 Ts = input.time(2) - input.time(1);
