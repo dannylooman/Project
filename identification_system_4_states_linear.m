@@ -45,22 +45,20 @@ opt.SearchOptions.MaxIterations = 50;
 identified_system = greyest(z, init_sys, opt);
 disp(identified_system.Report.Parameters.ParVector)
 
-%%
-id_sys = ssest(z, 4, 'Ts', Ts, 'DisturbanceModel', 'none', 'Form', 'canonical');
-
 % Compare results
-compare(z, identified_system, id_sys);
+compare(z, identified_system);
 
 %% Validation data
-% load("saved_data/28-Sep-2021 10_31_04-first_link_validation.mat");  % first link data
-% y_val = [theta1.data, dtheta1.data];
-% u_val = input.Data(1:length(theta1.data));
-% 
-% N_end = length(y_val);
-% N_start = max(int16(0.1 * N_end), 1);  % Index integers start at 1
-% z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
-% 
-% compare(z_val, id_sys);
+load("saved_data/27-Sep-2021 14_34_03-4meas-hangin-down.mat");  % first link data
+Ts = input.time(2) - input.time(1);  % Actual sample time
+
+y_val = [theta1.data-pi, dtheta1.data, theta2.data, dtheta2.data];
+u_val = input.Data(1:length(theta1.data));
+
+N_end = length(y_val);
+N_start = max(int16(0.1 * N_end), 1);  % Index integers start at 1
+z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Theta1'; 'Theta1_dot'; 'Theta2'; 'Theta2_dot';});
+compare(z_val, identified_system);
 
 %% Save model
 sys = identified_system;
