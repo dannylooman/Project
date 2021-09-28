@@ -12,8 +12,8 @@ opt.SearchOptions.MaxIterations = 50;
 load("saved_data\27-Sep-2021 14_14_20-4meas-hangin-down.mat");
 %%
 Ts = input.time(2) - input.time(1);
-theta1 = merge_theta(theta1.data(:,1),theta1.data(:,2)); %Preprocess theta1
-theta2 = merge_theta(theta1.data(:,1),theta1.data(:,2)); %Preprocess theta1
+theta1 = merge_theta(theta1, dtheta1); %Preprocess theta1
+theta2 = merge_theta(theta2, dtheta2); %Preprocess theta1
 
 % Transform timeseries to arrays and shrink input array to same size as
 % output array
