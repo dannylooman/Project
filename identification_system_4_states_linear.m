@@ -7,9 +7,6 @@ hwinit;
 load("saved_data/27-Sep-2021 15_45_53-first_link_only.mat");  % first link data
 
 Ts = input.time(2) - input.time(1);
-%%
-% Transform timeseries to arrays and shrink input array to same size as
-% output array, multiply with -1 makes it better?
 
 y = [theta1.data, dtheta1.data];
 u = input.Data(1:length(theta1.data));
@@ -19,19 +16,24 @@ N_start = max(int16(0.1 * N_end), 1);  % Index integers start at 1
 z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
 
 %% Linear grey box identification
-file_name = 'model_function_file_first_link_linear';
 
-L2 = 0.0881;
-b2 = 0.8089;
-g = 9.806;
-K = 0.2;
+% Grey box state space model
+file_name = 'system_4_states_linear';
 
-Parameters = {'length', L2; 'damping',b2; 'gravity', g; 'Motor Constant', K};
+% Load identified models for first and second link
+model_first_link = load("saved_data\first_link_identified_model.mat").id_sys;
+
+a = 0;
+b = 0;
+c = 0;
+d = 0;
+
+Parameters = {'a', a; 'b',b; 'c', c; 'd', d};
 
 init_sys = idgrey(file_name, Parameters, 'c');
-init_sys.Structure.Parameters(1).Free = false;
+init_sys.Structure.Parameters(1).Free = true;
 init_sys.Structure.Parameters(2).Free = true;
-init_sys.Structure.Parameters(3).Free = false;
+init_sys.Structure.Parameters(3).Free = true;
 init_sys.Structure.Parameters(4).Free = true;
 
 % Run linear identification
@@ -58,6 +60,3 @@ N_start = max(int16(0.1 * N_end), 1);  % Index integers start at 1
 z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
 
 compare(z_val, id_sys);
-
-%% Save model to file
-save("saved_data/first_link_identified_model", 'id_sys')

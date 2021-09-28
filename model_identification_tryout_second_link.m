@@ -38,11 +38,11 @@ opt = greyestOptions;
 opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 50;
 
-identified_system = greyest(z, init_sys, opt);
-disp(identified_system.Report.Parameters.ParVector)
+identified_system_linear = greyest(z, init_sys, opt);
+disp(identified_system_linear.Report.Parameters.ParVector)
 
 % Compare results
-compare(z, identified_system);
+compare(z, identified_system_linear);
 
 %% Nonlinear grey box identification
 file_name = 'model_function_file_second_link_nonlin';
@@ -66,8 +66,12 @@ init_sys = idnlgrey(file_name, Order, Parameters, InitialStates, Sample_time, 'N
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 100;
-identified_system = nlgreyest(z, init_sys, opt);
-disp(identified_system.Report.Parameters.ParVector)
+identified_system_nonlin = nlgreyest(z, init_sys, opt);
+disp(identified_system_nonlin.Report.Parameters.ParVector)
 
 % Compare results
-compare(z, identified_system);
+compare(z, identified_system_nonlin);
+%%
+compare(z, identified_system_nonlin, identified_system_linear);
+%% save linear model
+save("saved_data/second_link_identified_model", 'identified_system_linear')
