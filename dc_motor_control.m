@@ -33,13 +33,15 @@ K_ff = 1/dcgain(discrete_cl);
 
 %% Validate control gain
 
-opt = stepDataOptions('StepAmplitude', [1/dcgain(discrete_cl_dcmotor), 0]);
-[y_ct, t_ct, x_ct] = step(discrete_cl_dcmotor, 20);
+opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
+[y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
 ct_data = timeseries(y_ct, t_ct);
 
 figure(); hold on;
 plot(t_ct, y_ct(:,1));
 plot(t_ct, y_ct(:,2));
-legend("y1", "y2");
+plot(t_ct, y_ct(:,3));
+plot(t_ct, y_ct(:,4));
+legend("\theta_1", "dot \theta_1", "\theta_2", "dot \theta_2");
 
 
