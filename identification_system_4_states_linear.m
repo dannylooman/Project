@@ -4,15 +4,26 @@ clear; clc;
 hwinit;
 
 %% Create Identification data
-load("saved_data/27-Sep-2021 14_33_04-4meas-hangin-down.mat");  % dataset
-Ts = input.time(2) - input.time(1);  % Actual sample time
 
-y = [theta1.data-pi, dtheta1.data, theta2.data, dtheta2.data];
-u = input.Data(1:length(theta1.data));
+data_array=["27-Sep-2021 14_34_03-4meas-hangin-down",...
+    "27-Sep-2021 14_33_04-4meas-hangin-down",...
+    "27-Sep-2021 14_31_46-4meas-hangin-down",...
+    "27-Sep-2021 14_31_04-4meas-hangin-down"];
 
-N_end = length(y);
-N_start = max(int16(0.05 * N_end), 1);  % Index integers start at 1
-z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Theta1'; 'Theta1_dot'; 'Theta2'; 'Theta2_dot';});
+for i=1:length(data_array)
+    data_array(i)='saved_data/'+data_array(i)+'.mat';
+    load(data_array(i));  % dataset "saved_data/27-Sep-2021 14_33_04-4meas-hangin-down.mat"
+    Ts = input.time(2) - input.time(1);  % Actual sample time
+
+    y = [theta1.data-pi, dtheta1.data, theta2.data, dtheta2.data];
+    u = input.Data(1:length(theta1.data));
+
+    N_end = length(y);
+    N_start = max(int16(0.05 * N_end), 1);  % Index integers start at 1
+    z{i} = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Theta1'; 'Theta1_dot'; 'Theta2'; 'Theta2_dot';});
+end
+
+z_id = merge(z{1},z{2},z{3},z{4});
 
 %% Linear grey box identification
 
@@ -42,11 +53,18 @@ opt = greyestOptions;
 opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 50;
 
-identified_system = greyest(z, init_sys, opt);
+identified_system = greyest(z_id, init_sys, opt);
 disp(identified_system.Report.Parameters.ParVector)
 
-% Compare results
-compare(z, identified_system);
+%% Compare results
+figure()
+compare(z{1}, identified_system);
+figure()
+compare(z{2}, identified_system);
+figure()
+compare(z{3}, identified_system);
+figure()
+compare(z{4}, identified_system);
 
 %% Validation data
 load("saved_data/27-Sep-2021 14_34_03-4meas-hangin-down.mat");  % first link data
@@ -61,5 +79,7 @@ z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPen
 compare(z_val, identified_system);
 
 %% Save model
-sys = identified_system;
-save("saved_data/model_full_system_4_states", 'sys')
+if 1
+    sys = identified_system;
+    save("saved_data/model_full_system_4_states", 'sys')
+end
