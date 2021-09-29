@@ -2,18 +2,27 @@ clear; clc; close all;
 hwinit;
 load("saved_data\model_full_system_4_states.mat");
 
+%%
+sys = ss(sys);
+sys.A(4,3) = 1 * sys.A(4,3);
+
+sys.A(3,1) = -1 * sys.A(3,1);
+sys.A(3,2) = -1 * sys.A(3,2);
+sys.A(4,1) = -1 * sys.A(4,1);
+sys.A(4,2) = -1 * sys.A(4,2);
+
 %% Kalman filter
 Q_kf = 1 * diag([1, 1, 1, 1]);
 R_kf = 10 * diag([1, 10, 1, 10]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1, 0, 1, 0;
+Q_lqr = [1.1, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = 0.1;
+R_lqr = 1;
 K = dlqr(sys.A, sys.B, Q_lqr, R_lqr);
 
 
