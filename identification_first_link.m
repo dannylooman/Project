@@ -58,3 +58,6 @@ N_start = max(int16(0.1 * N_end), 1);  % Index integers start at 1
 z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
 
 compare(z_val, id_sys);
+
+%% Save model to file
+save("saved_data/first_link_identified_model", 'id_sys')
