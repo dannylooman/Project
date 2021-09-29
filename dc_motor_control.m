@@ -1,27 +1,25 @@
 clear; clc; close all;
 hwinit;
-load("saved_data\dcmotor_sys.mat");
-load("saved_data\15-Sep-2021 09_50_03-freq_sweep_stationary_second_link.mat")
+load("saved_data\model_full_system_4_states.mat");
 
-theta1 = conv_theta(theta1);
-Ts = input.time(2) - input.time(1);
-%%
-% Kalman filter
-Q_kf = diag([0.01, 0.01, 1])/1000;
-R_kf = diag([1, 100]);
-% Q_kf = diag([0.01, 0.1, 1])/1000000;
-% R_kf = eye(2)*100;
+%% Kalman filter
+Q_kf = 1 * diag([1, 1, 1, 1]);
+R_kf = 10 * diag([1, 10, 1, 10]);
+
 %%
 % state_feedbackgain
-Q_lqr = 1*diag([2, 0.1, 0.0001]);
+Q_lqr = [1, 0, 1, 0;
+         0, 0, 0, 0;
+         1, 0, 1, 0;
+         0, 0, 0, 0;];
+     
 R_lqr = 0.1;
-K = dlqr(dc_motor_ss.A, dc_motor_ss.B, Q_lqr, R_lqr);
+K = dlqr(sys.A, sys.B, Q_lqr, R_lqr);
 
 
 % Closed loop system
-discrete_cl_dcmotor = ss(dc_motor_ss.A - dc_motor_ss.B*K, ...
-                         dc_motor_ss.B, dc_motor_ss.C, dc_motor_ss.D, Ts);   
-K_ff = 1/dcgain(discrete_cl_dcmotor); 
+discrete_cl = ss(sys.A - sys.B*K, sys.B, sys.C, sys.D, sys.Ts);   
+K_ff = 1/dcgain(discrete_cl); 
 
 
 %% Validate control gain
