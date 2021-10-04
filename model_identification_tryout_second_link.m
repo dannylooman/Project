@@ -23,12 +23,12 @@ z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'Out
 file_name = 'model_function_file_second_link_linear';
 
 L2 = 0.0881;
-b2 = 0.8089;
-g = 9.806;
+b2 = 0.8093;
+g = 9.81;
 
 Parameters = {'length', L2; 'damping',b2; 'gravity', g;};
 
-init_sys = idgrey(file_name, Parameters, 'c');
+init_sys = idgrey(file_name, Parameters, 'c', 'Name', 'Linear system');
 init_sys.Structure.Parameters(1).Free = true;
 init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = false;
@@ -48,9 +48,8 @@ compare(z, identified_system_linear);
 file_name = 'model_function_file_second_link_nonlin';
 Order = [2 1 2];  % 1 outputs, 0 input, 2 states
 
-Parameters = [struct('Name', 'L2',  'Value', model.L2, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', true);
-              struct('Name', 'm_2', 'Value', model.m2, 'Unit', 'kg',    'Minimum', 0.00, 'Maximum', 1.00, 'Fixed', true);
-              struct('Name', 'b2',  'Value', model.b2, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 0.10, 'Fixed', true);
+Parameters = [struct('Name', 'L2',  'Value', model.L2, 'Unit', 'm',     'Minimum', 0.05, 'Maximum', 0.15, 'Fixed', false);
+              struct('Name', 'b2',  'Value', model.b2, 'Unit', '-',     'Minimum', 0.00, 'Maximum', 1.00, 'Fixed', false);
               struct('Name', 'g',   'Value', model.g,  'Unit', 'm/s^2', 'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);
               struct('Name', 'c2',  'Value', 0.0,      'Unit', 'Nm',    'Minimum', 0.00, 'Maximum', 10.0, 'Fixed', true);];
 
@@ -60,10 +59,10 @@ InitialStates = [struct('Name', 'x1', 'Value', theta2.data(N_start, 1), 'Unit', 
                  struct('Name', 'x2', 'Value', 0.0, 'Unit', 'rad/s',   'Minimum', -5, 'Maximum', 5, 'Fixed', false);];
 Sample_time = 0; % Continuous model
 
-init_sys = idnlgrey(file_name, Order, Parameters, InitialStates, Sample_time, 'Name', 'Rotational Pendulum');
+init_sys = idnlgrey(file_name, Order, Parameters, InitialStates, Sample_time, 'Name', 'Nonlinear system');
 
 % Run Nonlin identification
-opt = nlgreyestOptions;
+opt = nlgreyestOptions('Display', 'on');
 opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 100;
 identified_system_nonlin = nlgreyest(z, init_sys, opt);
