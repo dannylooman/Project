@@ -18,7 +18,7 @@ adinoffs = [adinoffs 0 0 0 0 0];    % input offset
 adingain = [adingain 1 1 1 1 1];     % input gain (to radians)
 
 % Other initialisation
-h = 0.001;
+h = 0.01;
 
 %Model parameters
 %m_1, m_2, C1, b2, g, R_a, K_m ,L_a
