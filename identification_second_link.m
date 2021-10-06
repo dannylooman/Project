@@ -1,23 +1,45 @@
-%%Script used for greybox identification of rotational pendulum
+%%Script used for identification of second link of rotational pendulum
 % Danny Looman
 clear; clc;
 hwinit;
 
-%% Create Identification data
-load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
+%% Create identification data from multiple experiments
+data_array=["06-Oct-2021 09_38_44-second_link_100hz",...
+            "06-Oct-2021 09_38_25-second_link_100hz"];
+%         "06-Oct-2021 09_36_58-second_link_100hz",...
+%         "06-Oct-2021 09_38_11-second_link_100hz",...
+        
+for i=1:length(data_array)
+    load('saved_data/' + data_array(i) + '.mat');
+    Ts = input.time(2) - input.time(1);  % Actual sample time
 
-Ts = input.time(2) - input.time(1);
-theta2 = conv_theta(theta2);
-%%
-% Transform timeseries to arrays and shrink input array to same size as
-% output array, multiply with -1 makes it better?
+    y = [theta2.data+0.02, dtheta2.data];
+    u = input.Data(1:length(theta2.data));
+    
+    %     tmp = conv_theta(theta2);
+    %     y = [tmp.data(:,1)-pi, tmp.data(:,2)];
 
-y = [theta2.data(:,1)- 0.016, theta2.data(:, 2)];
-u = input.Data(1:length(theta2.data(:, 1)), :);
+    N_end = length(y);
+    N_start = max(int16(0.10 * N_end), 1);  % Index integers start at 1
+    z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_2'; '\theta_2dot'});
+end
 
-N_end = length(y);
-N_start = int16(0.75 * N_end);
-z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
+z = merge(z_tmp{:});
+% %% Create Identification data
+% load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
+% 
+% Ts = input.time(2) - input.time(1);
+% theta2 = conv_theta(theta2);
+% %%
+% % Transform timeseries to arrays and shrink input array to same size as
+% % output array, multiply with -1 makes it better?
+% 
+% y = [theta2.data(:,1)- 0.016, theta2.data(:, 2)];
+% u = input.Data(1:length(theta2.data(:, 1)), :);
+% 
+% N_end = length(y);
+% N_start = int16(0.75 * N_end);
+% z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
 
 %% Linear grey box identification
 file_name = 'model_function_file_second_link_linear';
@@ -35,14 +57,19 @@ init_sys.Structure.Parameters(3).Free = false;
 
 % Run linear identification
 opt = greyestOptions;
-opt.Display = 'on';
+opt.Display = 'off';
+opt.InitialState = 'estimate';
 opt.SearchOptions.MaxIterations = 50;
 
 identified_system_linear = greyest(z, init_sys, opt);
 disp(identified_system_linear.Report.Parameters.ParVector)
 
-% Compare results
-compare(z, identified_system_linear);
+%% Compare results
+for i=1:length(data_array) 
+    figure(i);
+    compare(getexp(z, i), identified_system_linear);
+    hold on; title(""); hold off;
+end
 
 %% Nonlinear grey box identification
 file_name = 'model_function_file_second_link_nonlin';
@@ -65,7 +92,7 @@ init_sys = idnlgrey(file_name, Order, Parameters, InitialStates, Sample_time, 'N
 opt = nlgreyestOptions('Display', 'on');
 opt.Display = 'on';
 opt.SearchOptions.MaxIterations = 100;
-identified_system_nonlin = nlgreyest(z, init_sys, opt);
+identified_system_nonlin = nlgreyest(z, init_sys, opt);  
 disp(identified_system_nonlin.Report.Parameters.ParVector)
 
 % Compare results

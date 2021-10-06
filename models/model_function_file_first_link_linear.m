@@ -1,4 +1,4 @@
-function [A,B,C,D] = model_function_file_first_link_linear(L2, b2, g, K, Ts)
+function [A,B,C,D] = model_function_file_first_link_linear(L1, b1, g, K, Ts)
 % Subsitutions made from nonlinfun value
 %
 % Parameters: %L2, m2, b2, g, c2
@@ -9,7 +9,7 @@ function [A,B,C,D] = model_function_file_first_link_linear(L2, b2, g, K, Ts)
 %x(2) - theta2_dot
 
 A = [0, 1; 
-     -g/L2, -b2];
+     -g/L1, -b1];
      
 B = [0; K];
 

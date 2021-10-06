@@ -1,6 +1,6 @@
 %%Script used for greybox identification of rotational pendulum
 % Danny Looman
-clear; clc;
+clear; clc; close all;
 
 %% Create option structure
 opt = greyestOptions;
@@ -37,7 +37,7 @@ R = 0.1527;
 
 Parameters = {'inertia',J; 'motor_constant',K; 'L',L; 'R', R};
 
-init_sys = idgrey(file_name, Parameters, 'c');
+init_sys = idgrey(file_name, Parameters, 'c', 'Name', 'DC-motor 3 states');
 init_sys.Structure.Parameters(1).Free = true;
 init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = false;
@@ -48,7 +48,9 @@ identified_system = greyest(z, init_sys, opt);
 disp(identified_system.Report.Parameters.ParVector)
 
 %% Compare results
-compare(z, identified_system);
+fig = figure(1); 
+compare(z, identified_system); hold on;
+title("")
 
 %% Transform inertia J to mass of link 1
 L1 = 0.1;

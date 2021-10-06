@@ -5,17 +5,31 @@ hwinit;
 
 %% Create Identification data
 
+first_link_down = true;
+
+% first link down - second link down
 data_array=["27-Sep-2021 14_34_03-4meas-hangin-down",...
-    "27-Sep-2021 14_33_04-4meas-hangin-down",...
-    "27-Sep-2021 14_31_46-4meas-hangin-down",...
-    "27-Sep-2021 14_31_04-4meas-hangin-down"];
+            "27-Sep-2021 14_33_04-4meas-hangin-down",...
+            "27-Sep-2021 14_31_46-4meas-hangin-down",...
+            "27-Sep-2021 14_31_04-4meas-hangin-down"];
+
+% first link up - second link down
+% data_array=["29-Sep-2021 10_51_39-id_upward_hangin",...
+%             "29-Sep-2021 10_52_11-id_upward_hangin",...
+%             "29-Sep-2021 10_52_56-id_upward_hangin",...
+%             "29-Sep-2021 10_54_59-id_upward_hangin"];
 
 for i=1:length(data_array)
     data_array(i)='saved_data/'+data_array(i)+'.mat';
     load(data_array(i));  % dataset "saved_data/27-Sep-2021 14_33_04-4meas-hangin-down.mat"
     Ts = input.time(2) - input.time(1);  % Actual sample time
-
-    y = [theta1.data-pi, dtheta1.data, theta2.data, dtheta2.data];
+    test = conv_theta(theta1);
+    
+    if first_link_down
+        y = [theta1.data - pi, dtheta1.data, theta2.data, dtheta2.data];
+    else
+        y = [theta1.data, dtheta1.data, theta2.data, dtheta2.data];
+    end
     u = input.Data(1:length(theta1.data));
 
     N_end = length(y);
@@ -79,7 +93,7 @@ z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPen
 compare(z_val, identified_system);
 
 %% Save model
-if 1
+if 0
     sys = identified_system;
     save("saved_data/model_full_system_4_states", 'sys')
 end
