@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Import paths
-addpath('scripts')
+addpath('functions')
 addpath('models')
 
 % gains and offsets
