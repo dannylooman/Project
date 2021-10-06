@@ -6,10 +6,10 @@ load("saved_data\model_full_system_4_states.mat");
 sys = d2d(ss(sys), h, 'tustin');
 sys.A(4,3) = sys.A(4,3);
 
-sys.A(3,1) = -4.41272e-5;
-sys.A(3,2) = 0.00067017;
-sys.A(4,1) = 0.004535831;
-sys.A(4,2) = -0.0054175;
+% sys.A(3,1) = -4.41272e-5;
+% sys.A(3,2) = 0.00067017;
+% sys.A(4,1) = 0.004535831;
+% sys.A(4,2) = -0.0054175;
 
 %% Kalman filter
 Q_kf = 1 * diag([1, 1, 1, 1]);
@@ -17,12 +17,12 @@ R_kf = 10 * diag([1, 10, 1, 10]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1.05, 0, 1, 0;
+Q_lqr = [1.1, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = 0.2;
+R_lqr = 2;
 K = dlqr(sys.A, sys.B, Q_lqr, R_lqr);
 
 
