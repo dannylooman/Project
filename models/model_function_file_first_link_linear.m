@@ -1,4 +1,4 @@
-function [A,B,C,D] = model_function_file_first_link_linear(L1, b1, g, K, Ts)
+function [A,B,C,D] = model_function_file_first_link_linear(L1, b1, g, K1, K2, Ts)
 % Subsitutions made from nonlinfun value
 %
 % Parameters: %L2, m2, b2, g, c2
@@ -11,7 +11,7 @@ function [A,B,C,D] = model_function_file_first_link_linear(L1, b1, g, K, Ts)
 A = [0, 1; 
      -g/L1, -b1];
      
-B = [0; K];
+B = [K1; K2];
 
 C = [1, 0;
      0, 1];
