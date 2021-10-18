@@ -8,11 +8,15 @@ hwinit;
 first_link_down = true;
 
 % first link down - second link down
-data_array=["27-Sep-2021 14_34_03-4meas-hangin-down",...
-            "27-Sep-2021 14_33_04-4meas-hangin-down",...
-            "27-Sep-2021 14_31_46-4meas-hangin-down",...
-            "27-Sep-2021 14_31_04-4meas-hangin-down"];
+% data_array=["27-Sep-2021 14_34_03-4meas-hangin-down",...
+%             "27-Sep-2021 14_33_04-4meas-hangin-down",...
+%             "27-Sep-2021 14_31_46-4meas-hangin-down",...
+%             "27-Sep-2021 14_31_04-4meas-hangin-down"];
 
+data_array=["18-Oct-2021 13_31_52-full_system_100hz",...
+            "18-Oct-2021 13_32_43-full_system_100hz",...
+            "18-Oct-2021 13_34_45-full_system_100hz"];
+        
 % first link up - second link down
 % data_array=["29-Sep-2021 10_51_39-id_upward_hangin",...
 %             "29-Sep-2021 10_52_11-id_upward_hangin",...
@@ -37,7 +41,7 @@ for i=1:length(data_array)
     z{i} = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Theta1'; 'Theta1_dot'; 'Theta2'; 'Theta2_dot';});
 end
 
-z_id = merge(z{1},z{2},z{3},z{4});
+z_id = merge(z{1},z{2},z{3});
 
 %% Linear grey box identification
 
@@ -52,11 +56,12 @@ model_second_link = c2d(idss(model_second_link), Ts);
 % Create parameters
 a = 0; b = 0; c = 0; d = 0;
 Parameters = {'a', a; 
-              'b', b; 
-              'c', c; 
-              'd', d};
+              'b', b;
+              'c', c;
+              'd', d;};
 
 init_sys = idgrey(file_name, Parameters, 'd', {model_first_link, model_second_link}, Ts);
+% init_sys = idgrey(file_name, Parameters, 'c', {model_first_link, model_second_link});
 init_sys.Structure.Parameters(1).Free = true;
 init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = true;
@@ -93,7 +98,7 @@ z_val = iddata(y_val(N_start:N_end,:), u_val(N_start:N_end), Ts, 'Name', 'RotPen
 compare(z_val, identified_system);
 
 %% Save model
-if 0
+if 1
     sys = identified_system;
     save("saved_data/model_full_system_4_states", 'sys')
 end

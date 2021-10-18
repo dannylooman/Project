@@ -55,7 +55,7 @@ id_sys = ssest(z, 2, 'Ts', Ts, 'DisturbanceModel', 'none', 'Form', 'canonical');
 
 % Compare results
 figure(1)
-compare(getexp(z, 1), identified_system, id_sys);
+compare(getexp(z, 2), identified_system, id_sys);
 
 %% Validation data
 load("saved_data/28-Sep-2021 10_31_04-first_link_validation.mat");  % first link data
