@@ -76,12 +76,10 @@ identified_system = greyest(z_id, init_sys, opt);
 disp(identified_system.Report.Parameters.ParVector)
 
 %% Compare results
-figure()
-compare(z{1}, identified_system);
-figure()
-compare(z{2}, identified_system);
-figure()
-compare(z{3}, identified_system);
+for i=1:length(z)
+    figure()
+    compare(z{i}, identified_system);
+end
 
 %% Validation data
 load("saved_data/27-Sep-2021 14_34_03-4meas-hangin-down.mat");  % first link data
