@@ -3,8 +3,10 @@ hwinit;
 load("saved_data\model_full_system_4_states.mat");
 
 %%
-sys = c2d(ss(sys), h, 'zoh');
-sys.A(4,3) = sys.A(4,3);
+sys = d2d(ss(sys), h, 'zoh');
+sys.A(4,3) = -sys.A(4,3);
+
+sys.A(3:4, 3:4) = -sys.A(3:4, 3:4);
 
 % sys.A(3,1) = -4.41272e-5;
 % sys.A(3,2) = 0.00067017;

@@ -4,21 +4,31 @@ clear; clc;
 hwinit;
 
 %% Create identification data from multiple experiments
-data_array=["06-Oct-2021 09_44_13-first_link_100hz",...
-            "06-Oct-2021 09_44_53-first_link_100hz",...
-            "06-Oct-2021 09_46_01-first_link_100hz"];
+% data_array=["06-Oct-2021 09_44_13-first_link_100hz",...
+%             "06-Oct-2021 09_44_53-first_link_100hz",...
+%             "06-Oct-2021 09_46_01-first_link_100hz"];
+        
+data_array=["15-Sep-2021 09_23_40-freq_sweep_stationary_second_link",...
+            "15-Sep-2021 09_50_03-freq_sweep_stationary_second_link"];
         
 for i=1:length(data_array)
     load('saved_data/' + data_array(i) + '.mat');
     Ts = input.time(2) - input.time(1);  % Actual sample time
-    tmp = conv_theta(theta1);
-    y = [theta1.data - pi, dtheta1.data];
-    y = [tmp.data(:,1)-pi, tmp.data(:,2)];
-    u = input.Data(1:length(theta1.data));
+    
+    if 1
+        % Convert old save format to new format
+        tmp1 = conv_theta(theta1);
+        tmp2 = conv_theta(theta2);
+        y = [tmp1.data(:,1) - pi, tmp1.data(:, 2)];
+        u = input.Data(1:length(theta1.data));
+    else
+        y = [theta1.data - pi, dtheta1.data];
+        u = input.Data(1:length(theta1.data));
+    end
 
-    N_end = length(y);
-    N_start = max(int16(0.05 * N_end), 1);  % Index integers start at 1
-    z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_1'; '\theta_1dot'});
+    N_end = length(y)-1;
+    N_start = max(int32(0.05 * N_end), 1);  % Index integers start at 1
+    z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end, :), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_1'; '\theta_1dot'});
 end
 
 z = merge(z_tmp{:});
