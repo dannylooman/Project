@@ -1,6 +1,6 @@
 % Sensor saving script
 
-filename = replace(strcat("saved_data\", datestr(datetime), "-full_system_100hz.mat"),':','_');
+filename = replace(strcat("saved_data\", datestr(datetime), "-stabelizing_downward.mat"),':','_');
 save(filename, 'theta1', 'theta2','dtheta1', 'dtheta2', 'input')
 
 %% For loading into Simulink

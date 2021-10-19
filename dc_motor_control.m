@@ -1,21 +1,34 @@
 clear; clc; close all;
 hwinit;
-load("saved_data\model_full_system_4_states.mat");
 
-%%
-sys = d2d(ss(sys), h, 'zoh');
-sys.A(4,3) = -sys.A(4,3);
+run_on_backup_model = true;
 
-sys.A(3:4, 3:4) = -sys.A(3:4, 3:4);
+if run_on_backup_model
+    load("saved_data\backup\20211005_model_full_system_4_states.mat");
+    sys = ss(sys);
+else
+    load("saved_data\model_full_system_4_states.mat");
+    sys = ss(sys);
 
-% sys.A(3,1) = -4.41272e-5;
-% sys.A(3,2) = 0.00067017;
-% sys.A(4,1) = 0.004535831;
-% sys.A(4,2) = -0.0054175;
+    sys.A(4,3) = sys.A(4,3);
+    sys.A(4,1:2) = sys.A(4,1:2);
+end
+
+
+
+%% Discretize system
+if run_on_backup_model
+    dt_sys_zoh = d2d(sys, h, 'zoh');
+    dt_sys_tustin = d2d(sys, h, 'tustin');   
+else
+    dt_sys_zoh = c2d(sys, h, 'zoh');
+    dt_sys_tustin = c2d(sys, h, 'tustin');
+end
+
 
 %% Kalman filter
 Q_kf = 1 * diag([1, 1, 1, 1]);
-R_kf = 10 * diag([1, 10, 1, 10]);
+R_kf = 1 * diag([1, 10, 1, 10]);
 
 %%
 % state_feedbackgain
@@ -24,12 +37,15 @@ Q_lqr = [1.1, 0, 1, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = 2;
-K = dlqr(sys.A, sys.B, Q_lqr, R_lqr);
+R_lqr = 0.1;
+K = dlqr(dt_sys_zoh.A, dt_sys_zoh.B, Q_lqr, R_lqr);
 
+%K = [0.7302    0.0195    0.9458   -0.0001];
 
+ 
 % Closed loop system
-discrete_cl = ss(sys.A - sys.B*K, sys.B, sys.C, sys.D, sys.Ts); 
+discrete_cl = ss(dt_sys_tustin.A - dt_sys_tustin.B*K, dt_sys_tustin.B, ...
+                 dt_sys_tustin.C, dt_sys_tustin.D, dt_sys_tustin.Ts); 
 
 dcgain_sys = dcgain(discrete_cl);
 K_ff = 1/dcgain_sys; 
