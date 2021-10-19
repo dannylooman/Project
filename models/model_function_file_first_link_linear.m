@@ -9,7 +9,9 @@ function [A,B,C,D] = model_function_file_first_link_linear(L1, b1, c, g, K1, K2,
 %x(2) - theta2_dot
 
 A = [0, c; 
-     -g/L1, -b1];
+     0, -b1];
+ 
+% -g/L1, -b1];
      
 B = [K1; 
      K2];

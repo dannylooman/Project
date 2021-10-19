@@ -52,7 +52,7 @@ model_first_link = load("saved_data\first_link_identified_model_1state.mat").ide
 model_second_link = load("saved_data\second_link_identified_model.mat").identified_system_linear;
 
 % Create parameters
- a = -rand*10; b = -110.7672; c = -0.8233;
+ a = 100*randn(); b = -110.7672; c = -0.8233;
 Parameters = {'a', a; 
               'b', b;
               'c', c;};
