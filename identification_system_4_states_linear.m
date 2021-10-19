@@ -54,7 +54,7 @@ model_second_link = load("saved_data\second_link_identified_model.mat").identifi
 % Create parameters
 a = 0; b = 0; c = 0; d = 0;
 Parameters = {'a', a; 
-              'b', b;
+              'b', b;  
               'c', c;
               'd', d;};
 
