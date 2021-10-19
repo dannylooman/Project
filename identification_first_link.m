@@ -4,11 +4,15 @@ clear; clc;
 hwinit;
 
 %% Create identification data from multiple experiments
-data_array=["06-Oct-2021 09_44_13-first_link_100hz",...
-            "06-Oct-2021 09_44_53-first_link_100hz",...
-            "06-Oct-2021 09_46_01-first_link_100hz",...
-            "18-Oct-2021 13_31_52-full_system_100hz",...
-            "18-Oct-2021 13_32_43-full_system_100hz"];
+%"06-Oct-2021 09_44_13-first_link_100hz",...
+
+data_array = ["19-Oct-2021 10_47_14-identification_first_link_square_wave"];
+
+% data_array=["06-Oct-2021 09_44_53-first_link_100hz",...
+%             "06-Oct-2021 09_46_01-first_link_100hz",...
+%             "18-Oct-2021 13_31_52-full_system_100hz",...
+%             "19-Oct-2021 10_47_14-identification_first_link_square_wave",...
+%             "18-Oct-2021 13_32_43-full_system_100hz"];
         
 for i=1:length(data_array)
     load('saved_data/' + data_array(i) + '.mat');
@@ -34,25 +38,27 @@ z = merge(z_tmp{:});
 %% Linear grey box identification
 file_name = 'model_function_file_first_link_linear';
 
-L1 = 10;
-b1 = 2;
+L1 = 1;
+b1 = 20;
+c = 0.1;
 g = model.g;
-K1 = 8.0;
+K1 = -8.0;
 K2 = 0.0;
 
-Parameters = {'length', L1; 'damping',b1; 'gravity', g; 'Motor Constant', K1; 'Motor Constant 2', K2;};
+Parameters = {'length', L1; 'damping',b1; 'constant', c; 'gravity', g; 'Motor Constant', K1; 'Motor Constant 2', K2;};
 
 init_sys = idgrey(file_name, Parameters, 'c');
-init_sys.Structure.Parameters(1).Free = false;
-init_sys.Structure.Parameters(2).Free = true;
-init_sys.Structure.Parameters(3).Free = false;
-init_sys.Structure.Parameters(4).Free = true;
+init_sys.Structure.Parameters(1).Free = true;
+init_sys.Structure.Parameters(2).Free = false;
+init_sys.Structure.Parameters(3).Free = true;
+init_sys.Structure.Parameters(4).Free = false;
 init_sys.Structure.Parameters(5).Free = true;
+init_sys.Structure.Parameters(6).Free = false;
 
 % Run linear identification
 opt = greyestOptions;
 opt.Display = 'on';
-% opt.InitialState = 'estimate';
+opt.InitialState = 'estimate';
 opt.SearchOptions.MaxIterations = 50;
 
 identified_system = greyest(z, init_sys, opt);
