@@ -45,7 +45,7 @@ z = merge(z_tmp{:});
 file_name = 'model_function_file_second_link_linear';
 
 L2 = 0.0881;
-b2 = 0.8093;
+b2 = 0.0093;
 g = 9.81;
 
 Parameters = {'length', L2; 'damping',b2; 'gravity', g;};

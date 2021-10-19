@@ -1,11 +1,16 @@
 clear; clc; close all;
 hwinit;
 
-run_on_backup_model = true;
+run_on_backup_model = false;
 
 if run_on_backup_model
     load("saved_data\backup\20211005_model_full_system_4_states.mat");
     sys = ss(sys);
+    [A,B,C,D,Ts]=ssdata(sys);
+    A(2:end,1)=-A(2:end,1);
+    A(1:end,3)=-A(1:end,3);
+    A(3,3)=-A(3,3);
+    sys = ss(A,B,C,D,Ts);
 else
     load("saved_data\model_full_system_4_states.mat");
     sys = ss(sys);
@@ -13,7 +18,6 @@ else
     sys.A(4,3) = sys.A(4,3);
     sys.A(4,1:2) = sys.A(4,1:2);
 end
-
 
 
 %% Discretize system
@@ -38,10 +42,7 @@ Q_lqr = [1.1, 0, 1, 0;
          0, 0, 0, 0;];
      
 R_lqr = 0.1;
-K = dlqr(dt_sys_zoh.A, dt_sys_zoh.B, Q_lqr, R_lqr);
-
-%K = [0.7302    0.0195    0.9458   -0.0001];
-
+K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr);
  
 % Closed loop system
 discrete_cl = ss(dt_sys_tustin.A - dt_sys_tustin.B*K, dt_sys_tustin.B, ...
@@ -52,7 +53,8 @@ K_ff = 1/dcgain_sys;
 
 
 %% Validate control gain
-
+impulse(discrete_cl)
+%%
 opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
 [y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
 ct_data = timeseries(y_ct, t_ct);

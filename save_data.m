@@ -1,7 +1,7 @@
 % Sensor saving script
 
-filename = replace(strcat("saved_data\", datestr(datetime), "-full_system_100hz.mat"),':','_');
-save(filename, 'theta1', 'theta2','dtheta1', 'dtheta2', 'input')
+filename = replace(strcat("saved_data\", datestr(datetime), "-identification_closed_loop.mat"),':','_');
+save(filename, 'theta1', 'theta2', 'dtheta1', 'dtheta2', 'input')
 
 %% For loading into Simulink
 theta1 = conv_theta(theta1);
