@@ -51,7 +51,7 @@ model_first_link = load("saved_data\first_link_identified_model.mat").identified
 model_second_link = load("saved_data\second_link_identified_model.mat").identified_system_linear;
 
 % Create parameters with random initial values
-a = 100*randn(); b = 100*randn(); c = -110.7672; d = -0.8233;
+a = 70*randn(); b = 40*randn(); c = 100*randn(); d = -0.8233;
 Parameters = {'a', a; 
               'b', b;
               'c', c;
@@ -61,8 +61,8 @@ Parameters = {'a', a;
 init_sys = idgrey(file_name, Parameters, 'c', {model_first_link, model_second_link});
 init_sys.Name = "Identified system";
 init_sys.Structure.Parameters(1).Free = true;
-init_sys.Structure.Parameters(2).Free = true;
-init_sys.Structure.Parameters(3).Free = false;
+init_sys.Structure.Parameters(2).Free = false;
+init_sys.Structure.Parameters(3).Free = true;
 init_sys.Structure.Parameters(4).Free = false;
 
 % Run linear identification

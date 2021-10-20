@@ -15,8 +15,10 @@ else
     load("saved_data\model_full_system_4_states.mat");
     sys = ss(sys);
 
+    
+    sys.A(4,1) = sys.A(4,1);
+    sys.A(4,2) = sys.A(4,2);
     sys.A(4,3) = sys.A(4,3);
-    sys.A(4,1:2) = sys.A(4,1:2);
 end
 
 
@@ -36,13 +38,16 @@ R_kf = 1 * diag([1, 10, 1, 10]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1.1, 0, 1, 0;
+Q_lqr = [1, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = 0.1;
-K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr);
+R_lqr = .2;
+K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr)
+K(2) = K(2);
+K(3) = K(3);
+K(4) = K(4);
  
 % Closed loop system
 discrete_cl = ss(dt_sys_tustin.A - dt_sys_tustin.B*K, dt_sys_tustin.B, ...
