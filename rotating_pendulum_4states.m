@@ -15,10 +15,9 @@ else
     load("saved_data\model_full_system_4_states.mat");
     sys = ss(sys);
 
-    
-    sys.A(4,1) = sys.A(4,1);
+    sys.A(4,1) = -sys.A(4,1);
     sys.A(4,2) = sys.A(4,2);
-    sys.A(4,3) = sys.A(4,3);
+    sys.A(4,3) = -sys.A(4,3);
 end
 
 
@@ -33,12 +32,12 @@ end
 
 
 %% Kalman filter
-Q_kf = 1 * diag([1, 1, 1, 1]);
-R_kf = 1 * diag([1, 10, 1, 10]);
+Q_kf = 1 * diag([1, .01, 1, 1]);
+R_kf = 1 * diag([.1, 1000, .1, 100]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1, 0, 1, 0;
+Q_lqr = [1.0001, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
@@ -57,18 +56,18 @@ dcgain_sys = dcgain(discrete_cl);
 K_ff = 1/dcgain_sys; 
 
 
-%% Validate control gain
-impulse(discrete_cl)
-%%
-opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
-[y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
-ct_data = timeseries(y_ct, t_ct);
-
-figure(); hold on;
-plot(t_ct, y_ct(:,1));
-plot(t_ct, y_ct(:,2));
-plot(t_ct, y_ct(:,3));
-plot(t_ct, y_ct(:,4));
-legend("\theta_1", "dot \theta_1", "\theta_2", "dot \theta_2");
+% %% Validate control gain
+% impulse(discrete_cl)
+% %%
+% opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
+% [y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
+% ct_data = timeseries(y_ct, t_ct);
+% 
+% figure(); hold on;
+% plot(t_ct, y_ct(:,1));
+% plot(t_ct, y_ct(:,2));
+% plot(t_ct, y_ct(:,3));
+% plot(t_ct, y_ct(:,4));
+% legend("\theta_1", "dot \theta_1", "\theta_2", "dot \theta_2");
 
 

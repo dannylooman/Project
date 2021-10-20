@@ -5,8 +5,11 @@ function [A,B,C,D] = system_4_states_linear(a, b, c, d, Ts, model_first_link, mo
 % input: no input is applied 
 
 a_sub = [0, 0; a, b];
+Y = model_second_link.A;
+Y(2,2) = d;
+
 A = [model_first_link.A, zeros(2); 
-     a_sub, model_second_link.A];
+     a_sub, Y];
      
 B = [model_first_link.B; 0; c];
 
