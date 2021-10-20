@@ -5,6 +5,7 @@
 %Import paths
 addpath('functions')
 addpath('models')
+addpath('saved_data')
 
 % gains and offsets
 daoutoffs = [0.00];                   % output offset
@@ -22,15 +23,15 @@ h = 0.01;  % Accoarding to other group is this the fastest sampling frequency
 
 %Model parameters
 %m_1, m_2, C1, b2, g, R_a, K_m ,L_a
-model.L1=0.1;
-model.L2=0.0882;
-model.m2=0.0139;
-model.b2=0.0110;
-model.g=9.81;
-model.c=-6.8;
+model.L1 = 0.1;
+model.L2 = 0.0882;
+model.m1 = 0.2436;
+model.m2 = 0.05;
+model.C1 = 0.6;
+model.b2 = 0.0001;
+model.g  = 9.81;
+model.Ra = 0.0000151;
+model.Km = -0.1374;
+model.La = 4.4e-5;
 
-model.C1=0.6;
-model.m1=0.9196;
-model.Ra=0.1560;
-model.Km=-0.1469;
-model.La=0.02;
+model.c=-6.8;
