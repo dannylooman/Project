@@ -57,7 +57,7 @@ model_first_link = load("saved_data\first_link_identified_model.mat").identified
 model_second_link = load("saved_data\second_link_identified_model.mat").identified_system_linear;
 
 % Create parameters with random initial values
-a = 100*randn(); b = 100*randn(); c = 100*randn(); d = -0.8233;
+a = 0; b = 100*randn(); c = 1000*randn(); d = -0.8233;
 Parameters = {'a', a; 
               'b', b;
               'c', c;
@@ -69,7 +69,7 @@ init_sys.Name = "Identified system";
 init_sys.Structure.Parameters(1).Free = true;
 init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = true;
-init_sys.Structure.Parameters(4).Free = true;
+init_sys.Structure.Parameters(4).Free = false;
 
 % Run linear identification
 opt = greyestOptions;
@@ -86,6 +86,7 @@ for i=1:length(data_array)
     clf(figure(i)); figure(i);
     compare(getexp(z_id, i), identified_system); hold on;
     title(strcat("Trainingset ", num2str(i)));
+    legend();
 end
 
 %% Validation data

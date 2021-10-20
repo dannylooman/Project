@@ -9,7 +9,7 @@ Y = model_second_link.A;
 Y(2,2) = d;
 
 A = [model_first_link.A, zeros(2); 
-     a_sub, Y];
+     a_sub, model_second_link.A];
      
 B = [model_first_link.B; 0; c];
 

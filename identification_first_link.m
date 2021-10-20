@@ -10,20 +10,21 @@ hwinit;
 
 data_array=["20-Oct-2021 10_55_06-no_delay_first_link_freq_sweep1",...
             "20-Oct-2021 10_55_50-no_delay_first_link_freq_sweep2",...
-            "06-Oct-2021 09_46_01-first_link_100hz",...
             "20-Oct-2021 10_57_25-no_delay_first_link_ramp",...
             "20-Oct-2021 10_58_47-no_delay_first_link_pulse_generator"];
         
 for i=1:length(data_array)
     load('saved_data/' + data_array(i) + '.mat');
     Ts = input.time(2) - input.time(1);  % Actual sample time
+       
     
     y = [theta1.data - pi, dtheta1.data];
     u = input.Data(1:length(theta1.data));   
 
     N_end = length(y);
     N_start = max(int32(0.05 * N_end), 1);  % Index integers start at 1
-    z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end, :), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_1'; '\theta_1dot'});
+    z_tmp{i} = iddata(y(N_start:N_end,1), u(N_start:N_end, :), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_1'});
+%     z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end, :), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_1'; '\theta_1dot'});
 end
 
 z_id = merge(z_tmp{:});
