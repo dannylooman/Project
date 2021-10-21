@@ -1,7 +1,7 @@
 % Sensor saving script
 
-filename = replace(strcat("saved_data\", datestr(datetime), "-result_Kalman_filter.mat"),':','_');
-save(filename, 'theta1', 'theta2', 'dtheta1', 'dtheta2', 'input')
+filename = replace(strcat("saved_data\", datestr(datetime), "-stabelizing_upward_4_with_disturbance.mat"),':','_');
+save(filename, 'theta1', 'theta2', 'dtheta1', 'dtheta2', 'input', 'x_filtered', 'Q_lqr', 'R_lqr' ,'Q_kf', 'R_kf', 'K', 'sys')
 
 %% For loading into Simulink
 theta1 = conv_theta(theta1);

@@ -19,7 +19,7 @@ adinoffs = [adinoffs 0 0 0 0 0];     % input offset
 adingain = [adingain 1 1 1 1 1];     % input gain (to radians)
 
 % Other initialisation
-h = 0.008;  % Accoarding to other group is this the fastest sampling frequency
+h = 0.010;  % Accoarding to other group is this the fastest sampling frequency
 lowpass_gain = 0.03;
 
 %Model parameters

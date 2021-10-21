@@ -15,9 +15,9 @@ else
     load("saved_data\model_full_system_4_states.mat");
     sys = ss(sys);
 
-    sys.A(4,1) = sys.A(4,1);
+    sys.A(4,1) = -sys.A(4,1);
     sys.A(4,2) = sys.A(4,2);
-    sys.A(4,3) = sys.A(4,3);
+    sys.A(4,3) = -sys.A(4,3);
     
     sys.B(4) = sys.B(4);
 end
@@ -34,19 +34,19 @@ end
 
 
 %% Kalman filter
-Q_kf = diag([1e-6, .01, 1e-6, .005]);
+Q_kf = 0.02*diag([1e-6, .01, 1e-6, .005]);
 % R_kf = 1 * diag([.1, 10, .1, 100]);
 R_kf = diag([7.5740e-06, 0.1526, 1.4489e-05, 0.2930]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1.001, 0, 1, 0;
+Q_lqr = [1.01, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = .2;
-K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr);
+R_lqr = 0.5;
+K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr)
 
  
 % Closed loop system
