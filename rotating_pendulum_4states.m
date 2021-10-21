@@ -34,7 +34,7 @@ end
 
 
 %% Kalman filter
-Q_kf = 0.02*diag([1e-6, .01, 1e-6, .005]);
+Q_kf = 0.2*diag([1e-6, .01, 1e-6, .005]);
 % R_kf = 1 * diag([.1, 10, .1, 100]);
 R_kf = diag([7.5740e-06, 0.1526, 1.4489e-05, 0.2930]);
 
@@ -57,15 +57,15 @@ dcgain_sys = dcgain(discrete_cl);
 K_ff = 1/dcgain_sys; 
 
 %%
-% opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
-% [y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
-% ct_data = timeseries(y_ct, t_ct);
-% 
-% figure(); hold on;
-% plot(t_ct, y_ct(:,1));
-% plot(t_ct, y_ct(:,2));
-% plot(t_ct, y_ct(:,3));
-% plot(t_ct, y_ct(:,4));
-% legend("\theta_1", "dot \theta_1", "\theta_2", "dot \theta_2");
-% 
+opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
+[y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);
+ct_data = timeseries(y_ct, t_ct);
+
+figure(); hold on;
+plot(t_ct, y_ct(:,1));
+plot(t_ct, y_ct(:,2));
+plot(t_ct, y_ct(:,3));
+plot(t_ct, y_ct(:,4));
+legend("\theta_1", "dot \theta_1", "\theta_2", "dot \theta_2");
+
 

@@ -1,16 +1,16 @@
 clear; clc;
 
 %%
-load("saved_data\20-Oct-2021 10_37_42-results_downward_stabelizing.mat");
-control_objective = theta1 - pi + theta2;
+load("saved_data\21-Oct-2021 11_23_39-stabelizing_upward_3.mat");
+control_objective = theta1 + theta2 + pi;
 
 clf(figure(1)); figure(1); hold on; grid on;
-plot(theta1 - pi, '--', 'linewidth', 2)
+plot(theta1, '--', 'linewidth', 2)
 plot(control_objective, 'linewidth', 2)
 
 xlabel("time [s]"); ylabel("Angular Position [rad]");
 legend("\theta_1","\theta_1 + \theta_2");
-saveas(figure(1), 'images/control_downward_a_0.eps', 'epsc');
+saveas(figure(1), 'images/control_upward.eps', 'epsc');
 
 
 %%

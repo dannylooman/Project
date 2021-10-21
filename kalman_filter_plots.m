@@ -2,6 +2,7 @@ clear; clc;
 
 rotating_pendulum_4states;
 load("saved_data\20-Oct-2021 11_40_20-result_Kalman_filter.mat");
+sim('kalman_filter_run', input.time(end)); 
 
 %% Figure problem
 % clf(figure(1)); figure(1); hold on; grid on;
