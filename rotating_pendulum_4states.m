@@ -1,4 +1,4 @@
-clear; clc; close all;
+clear; clc;
 hwinit;
 
 run_on_backup_model = false;
@@ -15,10 +15,11 @@ else
     load("saved_data\model_full_system_4_states.mat");
     sys = ss(sys);
 
-    
-    sys.A(4,1) = sys.A(4,1);
+    sys.A(4,1) = -sys.A(4,1);
     sys.A(4,2) = sys.A(4,2);
-    sys.A(4,3) = sys.A(4,3);
+    sys.A(4,3) = -sys.A(4,3);
+    
+    sys.B(4) = sys.B(4);
 end
 
 
@@ -33,21 +34,20 @@ end
 
 
 %% Kalman filter
-Q_kf = 1 * diag([1, 1, 1, 1]);
-R_kf = 1 * diag([1, 10, 1, 10]);
+Q_kf = 0.2*diag([1e-6, .01, 1e-6, .005]);
+% R_kf = 1 * diag([.1, 10, .1, 100]);
+R_kf = diag([7.5740e-06, 0.1526, 1.4489e-05, 0.2930]);
 
 %%
 % state_feedbackgain
-Q_lqr = [1, 0, 1, 0;
+Q_lqr = [1.01, 0, 1, 0;
          0, 0, 0, 0;
          1, 0, 1, 0;
          0, 0, 0, 0;];
      
-R_lqr = .2;
+R_lqr = 0.5;
 K = dlqr(dt_sys_tustin.A, dt_sys_tustin.B, Q_lqr, R_lqr)
-K(2) = K(2);
-K(3) = K(3);
-K(4) = K(4);
+
  
 % Closed loop system
 discrete_cl = ss(dt_sys_tustin.A - dt_sys_tustin.B*K, dt_sys_tustin.B, ...
@@ -56,9 +56,6 @@ discrete_cl = ss(dt_sys_tustin.A - dt_sys_tustin.B*K, dt_sys_tustin.B, ...
 dcgain_sys = dcgain(discrete_cl);
 K_ff = 1/dcgain_sys; 
 
-
-%% Validate control gain
-impulse(discrete_cl)
 %%
 opt = stepDataOptions('StepAmplitude', [1/(dcgain_sys(1))]);
 [y_ct, t_ct, x_ct] = step(discrete_cl, 20, opt);

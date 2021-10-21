@@ -4,8 +4,8 @@ clear; clc;
 hwinit;
 
 %% Create identification data from multiple experiments
-data_array=["20-Oct-2021 11_02_40-no_delay_second_link1",...
-            "20-Oct-2021 11_03_34-no_delay_second_link2"];
+data_array=["20-Oct-2021 11_02_40-no_delay_second_link1"];
+
 %         "06-Oct-2021 09_36_58-second_link_100hz",...
 %         "06-Oct-2021 09_38_11-second_link_100hz",...
         
@@ -13,45 +13,26 @@ for i=1:length(data_array)
     load('saved_data/' + data_array(i) + '.mat');
     Ts = input.time(2) - input.time(1);  % Actual sample time
 
-    y = [theta2.data+0.02, dtheta2.data];
+    y = [theta2.data+0.015, dtheta2.data];
     u = input.Data(1:length(theta2.data));
-    
-    %     tmp = conv_theta(theta2);
-    %     y = [tmp.data(:,1)-pi, tmp.data(:,2)];
 
-    N_end = length(y);
-    N_start = max(int16(0.10 * N_end), 1);  % Index integers start at 1
+    N_end = int16(0.85 * length(y));
+    N_start = max(int16(0.55 * N_end), 1);  % Index integers start at 1
     z_tmp{i} = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'\theta_2'; '\theta_2dot'});
 end
 
 z = merge(z_tmp{:});
-% %% Create Identification data
-% load("saved_data/13-Sep-2021 14_50_03-second_link_swing_100hz_fix.mat");
-% 
-% Ts = input.time(2) - input.time(1);
-% theta2 = conv_theta(theta2);
-% %%
-% % Transform timeseries to arrays and shrink input array to same size as
-% % output array, multiply with -1 makes it better?
-% 
-% y = [theta2.data(:,1)- 0.016, theta2.data(:, 2)];
-% u = input.Data(1:length(theta2.data(:, 1)), :);
-% 
-% N_end = length(y);
-% N_start = int16(0.75 * N_end);
-% z = iddata(y(N_start:N_end,:), u(N_start:N_end), Ts, 'Name', 'RotPendulum', 'OutputName', {'Angle'; 'Angular velocity'});
-
 %% Linear grey box identification
 file_name = 'model_function_file_second_link_linear';
 
 L2 = 0.0881;
-b2 = 0.0093;
+b2 = 2;
 g = 9.81;
 
 Parameters = {'length', L2; 'damping',b2; 'gravity', g;};
 
 init_sys = idgrey(file_name, Parameters, 'c', 'Name', 'Linear system');
-init_sys.Structure.Parameters(1).Free = true;
+init_sys.Structure.Parameters(1).Free = false;
 init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = false;
 

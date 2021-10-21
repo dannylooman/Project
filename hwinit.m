@@ -15,11 +15,11 @@ daoutgain = 1*[-6];                   % output gain
 adinoffs = -[1.1671 3.8452];
 adingain = [1.2096 1.2156];
 
-adinoffs = [adinoffs 0 0 0 0 0];    % input offset
+adinoffs = [adinoffs 0 0 0 0 0];     % input offset
 adingain = [adingain 1 1 1 1 1];     % input gain (to radians)
 
 % Other initialisation
-h = 0.01;  % Accoarding to other group is this the fastest sampling frequency
+h = 0.010;  % Accoarding to other group is this the fastest sampling frequency
 lowpass_gain = 0.03;
 
 %Model parameters

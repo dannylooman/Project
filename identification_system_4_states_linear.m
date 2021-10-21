@@ -12,9 +12,15 @@ first_link_down = true;
 %             "27-Sep-2021 14_31_46-4meas-hangin-down",...
 %             "27-Sep-2021 14_31_04-4meas-hangin-down"];
 
-data_array=["18-Oct-2021 13_31_52-full_system_100hz",...
-            "18-Oct-2021 13_32_43-full_system_100hz",...
-            "19-Oct-2021 11_59_15-identification_down_down_backandforth"];   
+% data_array=["18-Oct-2021 13_31_52-full_system_100hz",...
+%             "18-Oct-2021 13_32_43-full_system_100hz",...
+%             "19-Oct-2021 11_59_15-identification_down_down_backandforth"];   
+        
+        
+data_array=["20-Oct-2021 11_07_25-no_delay_sys_1",...
+            "20-Oct-2021 11_11_21-no_delay_sys_3",...
+            "20-Oct-2021 11_09_51-no_delay_sys_2"];   
+        
 % data_array=["19-Oct-2021 11_59_15-identification_down_down_backandforth"];
         
 % first link up - second link down
@@ -51,7 +57,7 @@ model_first_link = load("saved_data\first_link_identified_model.mat").identified
 model_second_link = load("saved_data\second_link_identified_model.mat").identified_system_linear;
 
 % Create parameters with random initial values
-a = 70*randn(); b = 40*randn(); c = 100*randn(); d = -0.8233;
+a = 0; b = 100*randn(); c = 1000*randn(); d = -0.8233;
 Parameters = {'a', a; 
               'b', b;
               'c', c;
@@ -61,7 +67,7 @@ Parameters = {'a', a;
 init_sys = idgrey(file_name, Parameters, 'c', {model_first_link, model_second_link});
 init_sys.Name = "Identified system";
 init_sys.Structure.Parameters(1).Free = true;
-init_sys.Structure.Parameters(2).Free = false;
+init_sys.Structure.Parameters(2).Free = true;
 init_sys.Structure.Parameters(3).Free = true;
 init_sys.Structure.Parameters(4).Free = false;
 
@@ -80,6 +86,7 @@ for i=1:length(data_array)
     clf(figure(i)); figure(i);
     compare(getexp(z_id, i), identified_system); hold on;
     title(strcat("Trainingset ", num2str(i)));
+    legend();
 end
 
 %% Validation data
